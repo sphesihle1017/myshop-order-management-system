@@ -1,0 +1,160 @@
+/* Modern Color Scheme */
+:root {
+    --primary: #0d6efd;
+    --primary-dark: #0b5ed7;
+    --secondary: #6c757d;
+    --dark: #212529;
+    --light: #f8f9fa;
+    --light-gray: #e9ecef;
+    --success: #198754;
+    --danger: #dc3545;
+    --warning: #ffc107;
+    --info: #0dcaf0;
+}
+
+/* Base Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    color: var(--dark);
+    background-color: #ffffff;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+}
+
+/* Navbar Enhancements */
+.navbar {
+    padding: 0.8rem 0;
+}
+
+.navbar-brand {
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 0.5px;
+}
+
+.nav-link {
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+    .nav-link:hover {
+        color: var(--primary) !important;
+    }
+
+    .nav-link.active {
+        color: var(--primary) !important;
+        font-weight: 600;
+    }
+
+/* Search Box */
+.search-box {
+    max-width: 500px;
+}
+
+    .search-box .form-control:focus {
+        box-shadow: none;
+        border-color: var(--primary);
+    }
+
+/* Nav Icons */
+.nav-icons a {
+    transition: all 0.3s ease;
+}
+
+    .nav-icons a:hover {
+        color: var(--primary) !important;
+        transform: translateY(-2px);
+    }
+
+/* Announcement Bar */
+.announcement-bar {
+    font-size: 0.85rem;
+}
+
+/* Footer Styles */
+footer a {
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+    footer a:hover {
+        color: var(--light-gray) !important;
+        padding-left: 3px;
+    }
+
+.social-icons a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+    .social-icons a:hover {
+        background-color: var(--primary);
+        transform: translateY(-3px);
+    }
+
+/* Back to Top Button */
+.back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    z-index: 99;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/ /* Base style for the Products link */
+.nav-products {
+    position: relative;
+    font-weight: 600;
+    color: #0d6efd;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Darker color on hover */
+.nav-products:hover {
+    color: #003f88 !important; /* darker blue */
+}
+
+/* Sliding animation for the text */
+.nav-products .slide-text {
+    display: inline-block;
+    position: relative;
+    transition: transform 0.4s ease-in-out;
+}
+
+/* When hovering, the text slides in from the right */
+.nav-products:hover .slide-text {
+    transform: translateX(-5px);
+}
+
+/* Hover effects */
+.transform-on-hover {
+    transition: all 0.3s ease;
+}
+
+    .transform-on-hover:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15) !important;
+        z-index: 10;
+    }
+
+/* Smooth transition for all animatable properties */
+.transition-all {
+    transition-property: all;
+}   

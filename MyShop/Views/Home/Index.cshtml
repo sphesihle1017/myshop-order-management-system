@@ -1,0 +1,38 @@
+﻿
+@using MyShop.Models
+
+@model List<Product>
+@{
+    ViewData["Title"] = "Home Page";
+    
+}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Featured Products</h2>
+</div>
+
+        
+
+@if (Model != null && Model.Any())
+{
+    <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+        @foreach (var product in Model)
+        {
+            <div class="col-md-4 col-lg-3">
+                <div class="card h-100 shadow-sm mx-auto transition-all transform-on-hover"
+                     style="max-width: 300px;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-text">
+                            <strong>Category:</strong> @product.Category?.CategoryName <br>
+                            <strong>Price:</strong> R @product.Price.ToString("0.00")
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+        <div class="alert alert-info text-center">No products available at the moment.</div>
+}

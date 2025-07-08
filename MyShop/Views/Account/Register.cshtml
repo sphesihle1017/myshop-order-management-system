@@ -1,0 +1,261 @@
+﻿@{
+    ViewData["Title"] = "Create Account";
+}
+
+<div class="register-container">
+    <div class="register-card">
+        <div class="register-header">
+            <h2>Join Us</h2>
+            <p class="text-muted">Create your account to get started</p>
+        </div>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @ViewBag.Error
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <form method="post" class="register-form">
+            <div class="form-group">
+                <label for="username" class="form-label">Username</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-person-badge"></i>
+                    </span>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Choose a username" required />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-lock-fill"></i>
+                    </span>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Create a password" required />
+                    <button class="btn btn-outline-secondary toggle-password" type="button">
+                        <i class="bi bi-eye-fill"></i>
+                    </button>
+                </div>
+                <div class="password-strength mt-2">
+                    <div class="progress" style="height: 4px;">
+                        <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                    </div>
+                    <small class="text-muted">Password strength</small>
+                </div>
+            </div>
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="terms" required>
+                <label class="form-check-label" for="terms">
+                    I agree to the <a href="#" class="text-decoration-none">Terms and Conditions</a>
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 register-btn">
+                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                Create Account
+            </button>
+        </form>
+
+        <div class="register-footer text-center mt-3">
+            <p class="text-muted">
+                Already have an account?
+                <a href="@Url.Action("Login", "Account")" class="text-decoration-none fw-bold">Sign in</a>
+           
+            
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-color: #6366f1;
+        --primary-hover: #4f46e5;
+        --secondary-color: #f3f4f6;
+    }
+
+    body {
+        background-color: #f8fafc;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .register-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .register-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        padding: 40px;
+        width: 100%;
+        max-width: 450px;
+        transition: transform 0.3s ease;
+    }
+
+        .register-card:hover {
+            transform: translateY(-5px);
+        }
+
+    .register-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+        .register-header h2 {
+            color: #1e293b;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+    .register-form .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .register-form .form-label {
+        font-weight: 500;
+        color: #475569;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .register-form .form-control {
+        padding: 12px 15px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s;
+    }
+
+        .register-form .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+    .input-group-text {
+        background-color: #f1f5f9;
+        border: 1px solid #e2e8f0;
+    }
+
+    .toggle-password {
+        cursor: pointer;
+    }
+
+    .register-btn {
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        background-color: var(--primary-color);
+        border: none;
+        transition: all 0.3s;
+    }
+
+        .register-btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+    .password-strength .progress-bar {
+        transition: width 0.5s ease;
+    }
+
+    .divider {
+        position: relative;
+        text-align: center;
+        color: #94a3b8;
+    }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 45%;
+            height: 1px;
+            background-color: #e2e8f0;
+        }
+
+        .divider::before {
+            left: 0;
+        }
+
+        .divider::after {
+            right: 0;
+        }
+
+    .social-login .btn {
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    @@media (max-width: 576px) {
+        .register-card {
+            padding: 30px 20px;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Toggle password visibility
+            $('.toggle-password').click(function() {
+                const passwordInput = $('#password');
+                const icon = $(this).find('i');
+
+                if (passwordInput.attr('type') === 'password') {
+                    passwordInput.attr('type', 'text');
+                    icon.removeClass('bi-eye-fill').addClass('bi-eye-slash-fill');
+                } else {
+                    passwordInput.attr('type', 'password');
+                    icon.removeClass('bi-eye-slash-fill').addClass('bi-eye-fill');
+                }
+            });
+
+            // Password strength indicator
+            $('#password').on('input', function() {
+                const password = $(this).val();
+                const progressBar = $('.progress-bar');
+                let strength = 0;
+
+                if (password.length > 0) strength += 20;
+                if (password.length > 5) strength += 20;
+                if (password.match(/[A-Z]/)) strength += 20;
+                if (password.match(/[0-9]/)) strength += 20;
+                if (password.match(/[^A-Za-z0-9]/)) strength += 20;
+
+                progressBar.css('width', strength + '%');
+
+                // Change color based on strength
+                if (strength < 40) {
+                    progressBar.removeClass('bg-warning bg-success').addClass('bg-danger');
+                } else if (strength < 80) {
+                    progressBar.removeClass('bg-danger bg-success').addClass('bg-warning');
+                } else {
+                    progressBar.removeClass('bg-danger bg-warning').addClass('bg-success');
+                }
+            });
+
+            // Form submission loading state
+            $('form').submit(function() {
+                const btn = $(this).find('.register-btn');
+                btn.prop('disabled', true);
+                btn.find('.spinner-border').removeClass('d-none');
+                btn.find('span:not(.spinner-border)').text('Creating account...');
+            });
+        });
+    </script>
+}
+
+

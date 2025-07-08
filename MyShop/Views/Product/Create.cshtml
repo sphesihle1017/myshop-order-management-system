@@ -1,0 +1,84 @@
+﻿@model MyShop.Models.Product
+@{
+    ViewData["Title"] = "Create Product";
+}
+
+<div class="container py-4">
+    <div class="card shadow-sm border-0 rounded-lg">
+        <div class="card-header bg-primary text-white">
+            <h2 class="h4 mb-0">Create New Product</h2>
+        </div>
+
+        <div class="card-body">
+            <form asp-action="Create" method="post" class="needs-validation" novalidate>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-floating">
+                            <input asp-for="Name" class="form-control" placeholder="Product Name" required />
+                            <label asp-for="Name"></label>
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="form-floating">
+                            <input asp-for="Price" class="form-control" placeholder="Price" required />
+                            <label asp-for="Price"></label>
+                            <span asp-validation-for="Price" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="form-floating">
+                            <input asp-for="StockQuantity" class="form-control" placeholder="Stock Quantity" required />
+                            <label asp-for="StockQuantity"></label>
+                            <span asp-validation-for="StockQuantity" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="form-floating">
+                            <select asp-for="CategoryId" asp-items="ViewBag.CategoryList" class="form-select" required>
+                                <option value="">-- Select Category --</option>
+                            </select>
+                            <label asp-for="CategoryId">Category</label>
+                            <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to List
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Create Product
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Enhanced client-side validation
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
+}
