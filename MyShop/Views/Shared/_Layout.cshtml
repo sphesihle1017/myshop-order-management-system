@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Sphesihle's Shop</title>
+    <title>@ViewData["Title"] - Spheihle's Test Site</title>
     <!-- Modern Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,55 +30,10 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand fw-bold fs-3" asp-area="" asp-controller="Home" asp-action="Index">
-                    <span class="text-primary">Sphesihle's</span> Shop
+                    <span class="text-primary"> Sphesihle's </span> Test Site
+
                 </a>
-
-             @*    <!-- Search Bar (Visible on larger screens) -->
-                <div class="d-none d-lg-flex mx-4 flex-grow-1">
-                    <div class="input-group search-box">
-                        <input type="text" class="form-control border-end-0" placeholder="Search products..." aria-label="Search">
-                        <button class="btn btn-outline-secondary border-start-0" type="button">
-                            <i class="bi bi-search"></i>
-                        </button>
-                    </div>
-                </div>
-
-                 *@
-
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                </div>
-
-                <!-- Collapsible Content -->
-                <div class="collapse navbar-collapse" id="navbarContent">
-                    <!-- Search Bar (Visible on mobile) -->
-                    <div class="d-lg-none my-3">
-                        <div class="input-group search-box">
-                            <input type="text" class="form-control" >
-                            <button class="btn btn-primary" type="button">
-                                <i class="bi bi-search"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
-                    <li class="d-flex justify-content-center mb-4">
-                        <form asp-action="Search" method="get" class="w-100" style="max-width: 600px;">
-                            <div class="input-group shadow-sm">
-                                <input type="text"
-                                       name="query"
-                                       class="form-control border-end-0"
-                                       placeholder="Search products..."
-                                       aria-label="Search">
-                                <button type="submit"
-                                        class="btn btn-primary border-start-0">
-                                    <i class="bi bi-search"></i> Search
-                                </button>
-                            </div>
-                        </form>
-                    </li>
+                
 
                         <ul
                           
@@ -86,7 +41,7 @@
                             @if (User.Identity.IsAuthenticated)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Account" asp-action="Logout">Logout</a>
+                                    <a class="nav-link" asp-controller="Account" asp-action="Logout">Login</a>
                                 </li>
                             }
                             else
@@ -98,9 +53,7 @@
                         </ul>
 
 
-                        </li>
-                        
-                     </ul>
+                      
                         
                    
                 </div>
@@ -112,42 +65,24 @@
     <main>
         @RenderBody()
     </main>
-
-    <!-- Modern Footer -->
+  <!--HERE GOES MY FOOTER-->
     <footer class="bg-dark text-white pt-5 pb-4">
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 mb-4">
-                    <h5 class="text-uppercase fw-bold mb-4">Sphesihle's Shop</h5>
+                    <h5 class="text-uppercase fw-bold mb-4">Sphesihle's Test Site</h5>
                     <p>Your one-stop shop for quality products at affordable prices. We're committed to bringing you the best shopping experience.</p>
                     <div class="social-icons mt-3">
-                        <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
-                        <a href="#" class="text-white me-3"><i class="bi bi-twitter"></i></a>
-                        <a href="#" class="text-white me-3"><i class="bi bi-instagram"></i></a>
+                        <a href="http://www.facebook.com/sphesihle.shezi.468191" class="text-white me-3"><i class="bi bi-facebook"></i></a>
+                        <a href="https://www.instagram.com/shezi_s17/" class="text-white me-3"><i class="bi bi-instagram"></i></a>
                         <a href="#" class="text-white"><i class="bi bi-linkedin"></i></a>
                     </div>
                 </div>
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h5 class="text-uppercase fw-bold mb-4">Shop</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="#" class="text-white">All Products</a></li>
-                        <li class="mb-2"><a href="#" class="text-white">New Arrivals</a></li>
-                        <li class="mb-2"><a href="#" class="text-white">Featured</a></li>
-                        <li class="mb-2"><a href="#" class="text-white">Discounts</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h5 class="text-uppercase fw-bold mb-4">Help</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="#" class="text-white">FAQ</a></li>
-                        <li class="mb-2"><a href="#" class="text-white">Shipping</a></li>
-                        <li class="mb-2"><a href="#" class="text-white">Returns</a></li>
-                        <li class="mb-2"><a href="#" class="text-white">Contact Us</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-4 mb-4">
+
+                <!-- Added offset-lg-2 here -->
+                <div class="col-lg-4 offset-lg-2 mb-4">
                     <h5 class="text-uppercase fw-bold mb-4">Newsletter</h5>
-                    <p>Subscribe to get updates on new products and special offers!</p>
+                    <p>Subscribe to receive updates on the development of this site!</p>
                     <div class="input-group mb-3">
                         <input type="email" class="form-control" placeholder="Your email">
                         <button class="btn btn-primary" type="button">Subscribe</button>
@@ -158,13 +93,11 @@
             <hr class="my-4">
             <div class="row align-items-center">
                 <div class="col-md-6 text-center text-md-start">
-                    &copy; 2025 Sphesihle's Shop. All rights reserved.
-               
+                    &copy; 2025 Sphesihle's Test website. All rights reserved.
+                </div>
             </div>
         </div>
-        </div>
     </footer>
-
     <!-- Back to Top Button -->
     <a href="#" class="btn btn-primary btn-lg back-to-top" role="button">
         <i class="bi bi-arrow-up"></i>

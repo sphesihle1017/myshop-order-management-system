@@ -5,13 +5,15 @@ a, button, .form-control, .navbar, .card, .search-box input {
 
 /* Navbar Brand Hover */
 .navbar-brand:hover {
+
     transform: scale(1.05);
     color: #0d6efd !important;
+    
 }
 
 /* Nav Link Hover */
 .nav-link:hover {
-    color: #0d6efd !important;
+    color: rgb(128, 128, 128) !important;
     text-decoration: underline;
 }
 

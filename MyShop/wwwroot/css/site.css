@@ -29,7 +29,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Navbar Enhancements */
 .navbar {
-    padding: 0.8rem 0;
+    
 }
 
 .navbar-brand {
@@ -38,6 +38,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .nav-link {
+    color: var(--dark) !important;
     font-weight: 500;
     padding: 0.5rem 1rem;
     transition: all 0.3s ease;
