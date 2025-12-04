@@ -17,6 +17,12 @@
         [Required]
         public int Price { get; set; }
 
+        
+        public string? ImageFileName { get; set; } // Stores the filename
+
+        [NotMapped] // Not stored in database
+        public IFormFile? ImageFile { get; set; }
+
         [RegularExpression("([1-9][0-9]*)", ErrorMessage = "Please Enter Only Numeric Terms")]
 
         [Required]
