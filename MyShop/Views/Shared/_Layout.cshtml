@@ -86,7 +86,7 @@
                             @if (User.Identity.IsAuthenticated)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Account" asp-action="Logout">Logout</a>
+                                    <a class="nav-link" asp-controller="Account" asp-action="Logout">Login</a>
                                 </li>
                             }
                             else
@@ -98,9 +98,7 @@
                         </ul>
 
 
-                        </li>
-                        
-                     </ul>
+                      
                         
                    
                 </div>
@@ -108,7 +106,6 @@
         </nav>
     </header>
 
-    <!-- Main Content -->
     <main>
         @RenderBody()
     </main>
@@ -145,7 +142,9 @@
                         <li class="mb-2"><a href="#" class="text-white">Contact Us</a></li>
                     </ul>
                 </div>
-                <div class="col-lg-4 mb-4">
+
+                <!-- Added offset-lg-2 here -->
+                <div class="col-lg-4 offset-lg-2 mb-4">
                     <h5 class="text-uppercase fw-bold mb-4">Newsletter</h5>
                     <p>Subscribe to get updates on new products and special offers!</p>
                     <div class="input-group mb-3">
