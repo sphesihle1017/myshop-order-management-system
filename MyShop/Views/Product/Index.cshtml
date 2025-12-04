@@ -1,222 +1,331 @@
-﻿@model IEnumerable<MyShop.Models.Product>
-
+﻿@model List<MyShop.Models.Product>
 @{
-    ViewData["Title"] = "Product Catalog";
+    ViewData["Title"] = "Product Management";
 }
 
-<div class="container-fluid px-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="display-6 fw-bold text-gradient">Product Catalog</h1>
-        <a asp-action="Create" class="btn btn-success btn-lg">
-            <i class="bi bi-plus-circle"></i> Add New Product
-        </a>
-    </div>
+<div class="container mt-4">
+    <!-- Welcome Section -->
+    <div class="jumbotron bg-light p-5 rounded mb-4">
+        <h1 class="display-4">Product Manager!</h1>
+        <p class="lead">Your one-stop shop for amazing products.</p>
+        <hr class="my-4">
+        <div class="row">
+            <div class="col-md-6">
+                <p><i class="bi bi-box me-2"></i>Products: <strong>@ViewBag.ProductCount</strong></p>
+                <p><i class="bi bi-tags me-2"></i>Categories: <strong>@ViewBag.CategoryCount</strong></p>
+            </div>
+           
+        </div>
+       
+    
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <form asp-action="Search" method="get" class="row g-3">
-                <div class="col-md-8">
-                    <div class="input-group">
-                        <span class="input-group-text bg-transparent">
-                            <i class="bi bi-search"></i>
-                        </span>
-                        <input class="form-control form-control-lg" type="text" name="query"
-                               placeholder="Search products by name, category..." />
-                    </div>
+   
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-box-seam" style="font-size: 2.5rem;"></i>
+                    <h5 class="card-title mt-2">Products</h5>
+                    <a asp-controller="OrderManager" asp-action="Index" class="btn btn-light btn-sm">
+                        Manage Orders
+                    </a>
                 </div>
-                
-                <div class="col-md-4">
-                    
-                    <button type="submit" class="btn btn-primary btn-lg w-100">
-                        <i class="bi bi-search"></i> Search
-                    </button>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white bg-success h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-plus-circle" style="font-size: 2.5rem;"></i>
+                    <h5 class="card-title mt-2">Add Product</h5>
+                    <a asp-controller="Product" asp-action="Create" class="btn btn-light btn-sm">
+                        Create New Product
+                    </a>
                 </div>
-            </form>
+            </div>
+        </div>
+       
+        <div class="col-md-3">
+            <div class="card text-white bg-info h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-tags" style="font-size: 2.5rem;"></i>
+                    <h5 class="card-title mt-2">Categories</h5>
+                    <a asp-controller="Category" asp-action="Index" class="btn btn-light btn-sm">
+                        Manage Categories
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="ps-4">Product</th>
-                            <th>Price</th>
-                            <th>Stock</th>
-                            <th>Category</th>
-                            <th class="text-end pe-4">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var product in Model)
-                        {
-                            <tr class="product-row">
-                                <td class="ps-4 fw-semibold">@product.Name</td>
-                                <td>
-                                    <span class="badge bg-success bg-opacity-10 text-success">
-                                        R @product.Price.ToString("0.00")
-                                    </span>
-                                </td>
-                                <td>
-                                    @if (product.StockQuantity > 10)
-                                    {
-                                        <span class="badge bg-success bg-opacity-10 text-success">
-                                            @product.StockQuantity In Stock
-                                        </span>
-                                    }
-                                    else if (product.StockQuantity > 0)
-                                    {
-                                        <span class="badge bg-warning bg-opacity-10 text-warning">
-                                            @product.StockQuantity Low Stock
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-danger bg-opacity-10 text-danger">
-                                            Out of Stock
-                                        </span>
-                                    }
-                                </td>
-                                <td>
-                                    <span class="badge bg-primary bg-opacity-10 text-primary">
-                                        @product.Category?.CategoryName
-                                    </span>
-                                </td>
-                                <td class="text-end pe-4">
-                                    <div class="btn-group" role="group">
-                                        <a asp-action="Edit" asp-route-id="@product.ProductId"
-                                           class="btn btn-sm btn-outline-primary rounded-start-2">
-                                            <i class="bi bi-pencil-square"></i> Edit
-                                        </a>
-                                            <a asp-action="Details" asp-route-id="@product.ProductId">Details</a> | <!-- This links to your Details view -->
-                                        <a asp-action="Delete" asp-route-id="@product.ProductId"
-                                           class="btn btn-sm btn-outline-danger rounded-end-2">
-                                            <i class="bi bi-trash"></i> Delete
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-info h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-headset" style="font-size: 2.5rem;"></i>
+                    <h5 class="card-title mt-2">Register Admins</h5>
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-light btn-sm">
+                        Register Employees
+                    </a>
+                </div>
+            </div>
+        </div>
+
+            <div class="col-md-3">
+                <div class="card text-white bg-info h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-headset" style="font-size: 2.5rem;"></i>
+                        <h5 class="card-title mt-2">Manage Staff</h5>
+                        <a asp-controller="UserManagement" asp-action="Index" class="btn btn-light btn-sm">
+                            Manage Staff
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+    </div>
+      
+
+</div>
+   
+    <!-- Featured Products -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-star me-2"></i>Featured Products</h2>
+        
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            @foreach (var product in Model)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm product-card">
+                        <!-- Product Image -->
+                        <div class="product-image-container text-center p-3">
+                            @if (!string.IsNullOrEmpty(product.ImageFileName))
+                            {
+                                <img src="~/images/products/@product.ImageFileName"
+                                     class="img-fluid h-100 product-image"
+                                     alt="@product.Name" />
+                            }
+                            else
+                            {
+                                <i class="bi bi-image text-muted product-placeholder"></i>
+                                <p class="text-muted mt-2">No image</p>
+                            }
+                        </div>
+
+                        <div class="card-body">
+                            <h5 class="card-title">@product.Name</h5>
+                            <p class="card-text small text-muted mb-1">
+                                <i class="bi bi-tag"></i> @product.Category?.CategoryName
+                            </p>
+
+                            <!-- Stock Status -->
+                            <div class="stock-info mb-2">
+                                <span class="badge bg-@product.StockStatusColor stock-badge">
+                                    @product.StockStatus (@product.StockQuantity)
+                                </span>
+                                @if (product.IsLowStock && product.StockQuantity > 0)
+                                {
+                                    <small class="text-warning d-block mt-1">
+                                        <i class="bi bi-exclamation-triangle"></i> Low stock - reorder soon
+                                    </small>
+                                }
+                            </div>
+
+                            <p class="card-text fw-bold text-primary price-display">
+                                <i class="bi bi-currency"></i> R @product.Price.ToString("0.00")
+                            </p>
+
+                            <!-- Action Buttons -->
+                            <div class="d-flex justify-content-between mt-3">
+                                <a asp-controller="Product" asp-action="Details" asp-route-id="@product.ProductId"
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye me-1"></i>View
+                                </a>
+                                <a asp-controller="Product" asp-action="Edit" asp-route-id="@product.ProductId"
+                                   class="btn btn-sm btn-outline-warning">
+                                    <i class="bi bi-pencil me-1"></i>Edit
+                                </a>
+                              
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+      
+       
+    }
+    else
+    {
+        <div class="alert alert-info text-center py-5">
+            <div class="mb-3">
+                <i class="bi bi-box text-muted" style="font-size: 4rem;"></i>
+            </div>
+            <h4>No products available yet</h4>
+            <p class="mb-4">Get started by adding your first product to showcase here</p>
+            <div class="mt-4">
+                <a asp-controller="Product" asp-action="Create" class="btn btn-primary btn-lg me-3">
+                    <i class="bi bi-plus-circle me-2"></i>Create Your First Product
+                </a>
+                <a asp-controller="Category" asp-action="Create" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-tags me-2"></i>Create Category First
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Quick Create Modal (Optional) -->
+<div class="modal fade" id="quickCreateModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Quick Create Product</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>For full product creation with images and stock management, please use the main Create page.</p>
+                <div class="text-center">
+                    <a asp-controller="Product" asp-action="Create" class="btn btn-success btn-lg">
+                        <i class="bi bi-plus-circle me-2"></i>Go to Create Page
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-    :root {
-        --primary-color: #4e73df;
-        --secondary-color: #f8f9fc;
-        --success-color: #1cc88a;
-        --warning-color: #f6c23e;
-        --danger-color: #e74a3b;
-    }
-
-    body {
-        background-color: #f8f9fc;
-        font-family: 'Nunito', sans-serif;
-    }
-
-    .text-gradient {
-        background: linear-gradient(to right, #4e73df, #224abe);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-    }
-
-    .card {
-        border: none;
-        border-radius: 0.5rem;
-        overflow: hidden;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.08);
+@section Styles {
+    <style>
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #e9ecef;
         }
 
-    .table-hover tbody tr {
-        transition: all 0.2s ease;
-    }
+            .product-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+                border-color: #0d6efd;
+            }
 
-        .table-hover tbody tr:hover {
-            background-color: rgba(78, 115, 223, 0.05);
-            transform: scale(1.01);
+        .product-image-container {
+            height: 200px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-bottom: 1px solid #e9ecef;
         }
 
-    .badge {
-        padding: 0.35em 0.65em;
-        font-weight: 500;
-        border-radius: 0.25rem;
-    }
-
-    .btn-outline-primary {
-        border-color: var(--primary-color);
-        color: var(--primary-color);
-    }
-
-        .btn-outline-primary:hover {
-            background-color: var(--primary-color);
-            color: white;
+        .product-image {
+            object-fit: contain;
+            transition: transform 0.3s ease;
         }
 
-    .btn-outline-danger {
-        border-color: var(--danger-color);
-        color: var(--danger-color);
-    }
-
-        .btn-outline-danger:hover {
-            background-color: var(--danger-color);
-            color: white;
+        .product-card:hover .product-image {
+            transform: scale(1.05);
         }
 
-    .form-control:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
-    }
-
-    .input-group-text {
-        background-color: var(--secondary-color);
-    }
-
-    @@media (max-width: 768px) {
-        .d-flex {
-            flex-direction: column;
-            gap: 1rem;
+        .product-placeholder {
+            font-size: 4rem;
+            padding-top: 50px;
+            color: #adb5bd;
         }
 
-        .btn-lg {
-            width: 100%;
+        .stock-badge {
+            font-size: 0.9rem;
+            padding: 0.4em 0.8em;
         }
-    }
-</style>
+
+        .price-display {
+            font-size: 1.2rem;
+            color: #198754 !important;
+        }
+
+        .jumbotron {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 1px solid #dee2e6;
+        }
+
+        .card {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+    </style>
+}
 
 @section Scripts {
     <script>
-        // Add animation to table rows
-        document.querySelectorAll('.product-row').forEach((row, index) => {
-            row.style.opacity = '0';
-            row.style.transform = 'translateY(20px)';
-            row.style.animation = `fadeInUp 0.5s ease forwards ${index * 0.1}s`;
+        // Add to cart functionality
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.getAttribute('data-product-id');
+
+                // Show loading state
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Adding...';
+                this.disabled = true;
+
+                // Simulate API call
+                setTimeout(() => {
+                    // Show success message
+                    const toast = document.createElement('div');
+                    toast.className = 'position-fixed bottom-0 end-0 p-3';
+                    toast.style.zIndex = '11';
+                    toast.innerHTML = `
+                        <div class="toast show" role="alert">
+                            <div class="toast-header bg-success text-white">
+                                <i class="bi bi-check-circle me-2"></i>
+                                <strong class="me-auto">Success!</strong>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                            </div>
+                            <div class="toast-body">
+                                Product added to cart successfully!
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(toast);
+
+                    // Remove toast after 3 seconds
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 3000);
+
+                    // Reset button
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                }, 1000);
+            });
         });
 
-        // Add CSS animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @@keyframes fadeInUp {
-                from {
-                    opacity: 0;
-                    transform: translateY(20px);
+        // Quick create modal trigger (if you want a modal)
+        document.getElementById('quickCreateBtn')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            const modal = new bootstrap.Modal(document.getElementById('quickCreateModal'));
+            modal.show();
+        });
+
+        // Update stock status colors on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.stock-badge').forEach(badge => {
+                const text = badge.textContent.toLowerCase();
+                if (text.includes('out of stock')) {
+                    badge.className = 'badge bg-danger stock-badge';
+                } else if (text.includes('low stock')) {
+                    badge.className = 'badge bg-warning stock-badge';
+                } else {
+                    badge.className = 'badge bg-success stock-badge';
                 }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-        `;
-        document.head.appendChild(style);
+            });
+        });
     </script>
 }

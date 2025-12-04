@@ -23,7 +23,7 @@ namespace MyShop.Controllers
         //Retrieving all Products including their category
         public async Task<IActionResult> Index()
         {
-            var products = await _context.Product
+            var products = await _context.Products
                                 .Include(p => p.Category)
                                 .Where(p => p.IsActive)
                                 .ToListAsync();
@@ -35,7 +35,7 @@ namespace MyShop.Controllers
         }
         public async Task<IActionResult> Search(string query)
         {
-            var filteredProducts = await _context.Product
+            var filteredProducts = await _context.Products
                                   .Include(p => p.Category)
                                   .Where(p => p.Name.Contains(query))
                                   .ToListAsync();

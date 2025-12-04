@@ -1,0 +1,227 @@
+﻿@{
+    ViewData["Title"] = "Track Your Order";
+}
+
+<style>
+    .track-container {
+        max-width: 800px;
+        margin: 3rem auto;
+    }
+
+    .track-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .track-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 3rem 2rem;
+        text-align: center;
+    }
+
+    .track-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .track-form {
+        padding: 2rem;
+    }
+
+    .search-box {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+        font-size: 1.2rem;
+    }
+
+    .search-input {
+        padding-left: 45px;
+        height: 50px;
+        font-size: 1.1rem;
+    }
+
+    .search-btn {
+        height: 50px;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .info-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .info-card {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .info-card i {
+            font-size: 2.5rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        margin: 2rem 0;
+        color: #6c757d;
+    }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .divider span {
+            padding: 0 1rem;
+        }
+
+    .email-help {
+        background-color: #e7f1ff;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+    }
+</style>
+
+<div class="track-container">
+    <div class="track-card">
+        <!-- Header -->
+        <div class="track-header">
+            <div class="track-icon">
+                <i class="bi bi-geo-alt"></i>
+            </div>
+            <h1 class="display-5">Track Your Order</h1>
+            <p class="lead">Enter your Order ID or Email address to check the status of your order</p>
+        </div>
+
+        <!-- Search Form -->
+        <div class="track-form">
+            <form asp-action="Search" method="post" id="trackForm">
+                @Html.AntiForgeryToken()
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger">
+                        @Html.ValidationSummary(false, "", new { @class = "mb-0" })
+                    </div>
+                }
+
+                <!-- Order ID Search -->
+                <div class="search-box">
+                    <i class="bi bi-receipt search-icon"></i>
+                    <input type="text"
+                           name="orderId"
+                           class="form-control search-input"
+                           placeholder="Enter Order ID (e.g., 123456)"
+                           id="orderIdInput">
+                </div>
+
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+
+                <!-- Email Search -->
+                <div class="search-box">
+                    <i class="bi bi-envelope search-icon"></i>
+                    <input type="email"
+                           name="email"
+                           class="form-control search-input"
+                           placeholder="Enter Email Address"
+                           id="emailInput">
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary search-btn" id="trackBtn">
+                        <i class="bi bi-search me-2"></i>Track Order
+                    </button>
+                </div>
+            </form>
+
+            <!-- Help Information -->
+            <div class="email-help">
+                <h5><i class="bi bi-info-circle me-2"></i>Need Help?</h5>
+                <p class="mb-0">
+                    Can't find your order ID? Check your email confirmation or contact our
+                    <a href="mailto:support@myshop.com">customer support</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Information Cards -->
+    <div class="info-cards mt-5">
+        <div class="info-card">
+            <i class="bi bi-clock-history"></i>
+            <h5>Real-time Tracking</h5>
+            <p>Get live updates on your order status</p>
+        </div>
+        <div class="info-card">
+            <i class="bi bi-truck"></i>
+            <h5>Shipping Updates</h5>
+            <p>Track your package every step of the way</p>
+        </div>
+        <div class="info-card">
+            <i class="bi bi-bell"></i>
+            <h5>Get Notified</h5>
+            <p>Receive email updates on status changes</p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('trackForm');
+            const trackBtn = document.getElementById('trackBtn');
+
+            form.addEventListener('submit', function(e) {
+                const orderId = document.getElementById('orderIdInput').value.trim();
+                const email = document.getElementById('emailInput').value.trim();
+
+                if (!orderId && !email) {
+                    e.preventDefault();
+                    alert('Please enter either an Order ID or Email address');
+                    return;
+                }
+
+                // Show loading state
+                trackBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Searching...';
+                trackBtn.disabled = true;
+            });
+
+            // Auto-focus on first input
+            document.getElementById('orderIdInput').focus();
+
+            // Format order ID input
+            document.getElementById('orderIdInput').addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+        });
+    </script>
+}

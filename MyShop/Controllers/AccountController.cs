@@ -1,79 +1,143 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MyShop.Data;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using MyShop.Models; // Add this
+using MyShop.ViewModels;
 
-public class AccountController : Controller
+namespace MyShop.Controllers
 {
-    private readonly ApplicationDbContext _context;
-
-    public AccountController(ApplicationDbContext context)
+    public class AccountController : Controller
     {
-        _context = context;
-    }
+        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-    [HttpGet]
-    public IActionResult Register() => View();
-
-    [HttpPost]
-    public async Task<IActionResult> Register(string username, string password)
-    {
-        if (_context.Users.Any(u => u.Username == username))
+        public AccountController(
+            SignInManager<IdentityUser> signInManager,
+            UserManager<IdentityUser> userManager,
+            RoleManager<IdentityRole> roleManager)
         {
-            ViewBag.Error = "Username already taken";
+            _signInManager = signInManager;
+            _userManager = userManager;
+            _roleManager = roleManager;
+        }
+        [HttpGet]
+        public IActionResult Register()
+        {
+            var model = new RegisterViewModel
+            {
+                AvailableRoles = GetAvailableRoles()
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                // Check if email exists
+                var existingUser = await _userManager.FindByEmailAsync(model.Email);
+                if (existingUser != null)
+                {
+                    ModelState.AddModelError("Email", "Email already exists.");
+                    model.AvailableRoles = GetAvailableRoles();
+                    return View(model);
+                }
+
+                // Create user - Use ApplicationUser
+                var user = new ApplicationUser // Change to ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    PhoneNumber = model.PhoneNumber,
+                    FirstName = model.FirstName, // Add these if your ApplicationUser has them
+                    LastName = model.LastName
+                };
+
+                var result = await _userManager.CreateAsync(user, model.Password);
+
+                if (result.Succeeded)
+                {
+                    // Add to role if selected
+                    if (!string.IsNullOrEmpty(model.SelectedRole))
+                    {
+                        await _userManager.AddToRoleAsync(user, model.SelectedRole);
+                    }
+                    else
+                    {
+                        // Default to Customer role
+                        await _userManager.AddToRoleAsync(user, "Customer");
+                    }
+
+                    // Sign in
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    TempData["SuccessMessage"] = "Registration successful!";
+                    return RedirectToAction("Index", "Product");
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
+
+            model.AvailableRoles = GetAvailableRoles();
+            return View(model);
+        }
+
+        // Rest of the code remains the same...
+        [HttpGet]
+        public IActionResult Login(string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
-        var hashedPassword = HashPassword(password);
-        var user = new User { Username = username, PasswordHash = hashedPassword };
-
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-
-        return RedirectToAction("Login");
-    }
-
-    [HttpGet]
-    public IActionResult Login() => View();
-
-    [HttpPost]
-    public async Task<IActionResult> Login(string username, string password)
-    {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
-
-        if (user == null || user.PasswordHash != HashPassword(password))
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(string email, string password, bool rememberMe = false, string returnUrl = null)
         {
-            ViewBag.Error = "Invalid username or password";
+            ViewData["ReturnUrl"] = returnUrl;
+
+            if (!string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password))
+            {
+                var result = await _signInManager.PasswordSignInAsync(email, password, rememberMe, lockoutOnFailure: false);
+
+                if (result.Succeeded)
+                {
+                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    {
+                        return Redirect(returnUrl);
+                    }
+                    return RedirectToAction("Index", "Product");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                }
+            }
+
             return View();
         }
 
-        var claims = new List<Claim> {
-            new Claim(ClaimTypes.Name, user.Username)
-        };
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
+        }
 
-        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-        var principal = new ClaimsPrincipal(identity);
-
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-        return RedirectToAction("Index", "Product");
-
-    }
-
-    public async Task<IActionResult> Logout()
-    {
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        return RedirectToAction("Login");
-    }
-
-    private string HashPassword(string password)
-    {
-        using var sha256 = SHA256.Create();
-        var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-        return Convert.ToBase64String(bytes);
+        private List<SelectListItem> GetAvailableRoles()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Value = "Customer", Text = "Customer" },
+                new SelectListItem { Value = "Manager", Text = "Manager" },
+                new SelectListItem { Value = "Admin", Text = "Admin" },
+            };
+        }
     }
 }
-

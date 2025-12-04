@@ -1,226 +1,56 @@
-﻿@{
+﻿@using MyShop.ViewModels
+@model LoginViewModel
+
+@{
     ViewData["Title"] = "Login";
 }
 
-<div class="login-container">
-    <div class="login-card">
-        <div class="login-header">
-            <h2>Welcome Back</h2>
-            <p class="text-muted">Please enter your credentials</p>
-        </div>
-
-        @if (ViewBag.Error != null)
-        {
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                @ViewBag.Error
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<div class="row justify-content-center mt-5">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Login</h4>
             </div>
-        }
+            <div class="card-body">
+                <form method="post">
+                    <div asp-validation-summary="All" class="text-danger"></div>
 
-        <form method="post" class="login-form">
-            <div class="form-group">
-                <label for="username" class="form-label">Username</label>
-                <div class="input-group">
-                    <span class="input-group-text">
-                        <i class="bi bi-person-fill"></i>
-                    </span>
-                    <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required />
+                    <div class="form-group mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Password" class="form-label"></label>
+                        <input asp-for="Password" type="password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label asp-for="RememberMe" class="form-check-label"></label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                </form>
+
+               
+
+                <hr class="my-4">
+
+                <div class="alert alert-info">
+                    <h6>Demo Credentials:</h6>
+                    <p class="mb-1"><strong>Admin:</strong> admin@myshop.com / Admin@123</p>
+                    <p class="mb-0"><strong>Customer:</strong> customer@myshop.com / Customer@123</p>
                 </div>
             </div>
-
-            <div class="form-group">
-                <label for="password" class="form-label">Password</label>
-                <div class="input-group">
-                    <span class="input-group-text">
-                        <i class="bi bi-lock-fill"></i>
-                    </span>
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required />
-                    <button class="btn btn-outline-secondary toggle-password" type="button">
-                        <i class="bi bi-eye-fill"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="d-flex justify-content-between mb-3">
-                
-                <a href="#" class="text-decoration-none">Forgot password?</a>
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100 login-btn">
-                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                Login
-            </button>
-        </form>
-
-        <div class="login-footer text-center mt-3">
-            <p class="text-muted">
-                Don't have an account?
-                <a href="@Url.Action("Register", "Account")" class="text-decoration-none fw-bold">Sign up</a>
-            </p>
-           
-         
         </div>
     </div>
 </div>
 
-<style>
-    :root {
-        --primary-color: #6366f1;
-        --primary-hover: #4f46e5;
-        --secondary-color: #f3f4f6;
-    }
-
-    body {
-        background-color: #f8fafc;
-        font-family: 'Inter', sans-serif;
-    }
-
-    .login-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        padding: 20px;
-    }
-
-    .login-card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-        padding: 40px;
-        width: 100%;
-        max-width: 450px;
-        transition: transform 0.3s ease;
-    }
-
-        .login-card:hover {
-            transform: translateY(-5px);
-        }
-
-    .login-header {
-        text-align: center;
-        margin-bottom: 30px;
-    }
-
-        .login-header h2 {
-            color: #1e293b;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-    .login-form .form-group {
-        margin-bottom: 1.5rem;
-    }
-
-    .login-form .form-label {
-        font-weight: 500;
-        color: #475569;
-        margin-bottom: 8px;
-        display: block;
-    }
-
-    .login-form .form-control {
-        padding: 12px 15px;
-        border-radius: 8px;
-        border: 1px solid #e2e8f0;
-        transition: all 0.3s;
-    }
-
-        .login-form .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-        }
-
-    .input-group-text {
-        background-color: #f1f5f9;
-        border: 1px solid #e2e8f0;
-    }
-
-    .toggle-password {
-        cursor: pointer;
-    }
-
-    .login-btn {
-        padding: 12px;
-        border-radius: 8px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        background-color: var(--primary-color);
-        border: none;
-        transition: all 0.3s;
-    }
-
-        .login-btn:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-2px);
-        }
-
-    .divider {
-        position: relative;
-        text-align: center;
-        color: #94a3b8;
-    }
-
-        .divider::before,
-        .divider::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            width: 45%;
-            height: 1px;
-            background-color: #e2e8f0;
-        }
-
-        .divider::before {
-            left: 0;
-        }
-
-        .divider::after {
-            right: 0;
-        }
-
-    .social-login .btn {
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    @@media (max-width: 576px) {
-        .login-card {
-            padding: 30px 20px;
-        }
-    }
-</style>
-
 @section Scripts {
-    <script>
-        $(document).ready(function() {
-            // Toggle password visibility
-            $('.toggle-password').click(function() {
-                const passwordInput = $('#password');
-                const icon = $(this).find('i');
-
-                if (passwordInput.attr('type') === 'password') {
-                    passwordInput.attr('type', 'text');
-                    icon.removeClass('bi-eye-fill').addClass('bi-eye-slash-fill');
-                } else {
-                    passwordInput.attr('type', 'password');
-                    icon.removeClass('bi-eye-slash-fill').addClass('bi-eye-fill');
-                }
-            });
-
-            // Form submission loading state
-            $('form').submit(function() {
-                const btn = $(this).find('.login-btn');
-                btn.prop('disabled', true);
-                btn.find('.spinner-border').removeClass('d-none');
-                btn.find('span:not(.spinner-border)').text('Logging in...');
-            });
-        });
-    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
-
-

@@ -1,0 +1,377 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - My Shop</title>
+    <!-- Modern Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/MyShop.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/interactive.css" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- ADD THIS LINE -->
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+
+
+
+    <!-- Modern Header -->
+    <header class="sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+            <div class="container">
+                <a class="navbar-brand fw-bold fs-3" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="text-primary">My </span> Shop
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">
+                                <i class="bi bi-house"></i> Home
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link position-relative" asp-controller="Cart" asp-action="Index">
+                                <i class="bi bi-cart"></i> Cart
+                                <!-- Cart Notification Badge -->
+                                <span id="cartBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+                                    0
+                                </span>
+                            </a>
+                        </li>
+
+                        <ul class="navbar-nav ml-auto">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        @User.Identity.Name
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <form method="post" asp-controller="Account" asp-action="Logout">
+                                            <button type="submit" class="dropdown-item">Logout</button>
+                                        </form>
+                                    </div>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Account" asp-action="Register">Register</a>
+                                </li>
+                            }
+                        </ul>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <!-- Modern Footer -->
+    <footer class="bg-dark text-white pt-5 pb-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="text-uppercase fw-bold mb-4">Sphesihle's Shop</h5>
+                    <p>Your one-stop shop for quality products at affordable prices. We're committed to bringing you the best shopping experience.</p>
+                    <div class="social-icons mt-3">
+                        <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-white me-3"><i class="bi bi-twitter"></i></a>
+                        <a href="#" class="text-white me-3"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-white"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5 class="text-uppercase fw-bold mb-4">Shop</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-white">All Products</a></li>
+                        <li class="mb-2"><a href="#" class="text-white">New Arrivals</a></li>
+                        <li class="mb-2"><a href="#" class="text-white">Featured</a></li>
+                        <li class="mb-2"><a href="#" class="text-white">Discounts</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5 class="text-uppercase fw-bold mb-4">Help</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-white">FAQ</a></li>
+                        <li class="mb-2"><a href="#" class="text-white">Shipping</a></li>
+                        <li class="mb-2"><a href="#" class="text-white">Returns</a></li>
+                        <li class="mb-2"><a href="#" class="text-white">Contact Us</a></li>
+                    </ul>
+                </div>
+
+                <!-- Added offset-lg-2 here -->
+                <div class="col-lg-4 offset-lg-2 mb-4">
+                    <h5 class="text-uppercase fw-bold mb-4">Newsletter</h5>
+                    <p>Subscribe to get updates on new products and special offers!</p>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder="Your email">
+                        <button class="btn btn-primary" type="button">Subscribe</button>
+                    </div>
+                    <small class="text-muted">We'll never share your email with anyone else.</small>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    &copy; 2025 Sphesihle's Shop. All rights reserved.
+
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <a href="#" class="btn btn-primary btn-lg back-to-top" role="button">
+        <i class="bi bi-arrow-up"></i>
+    </a>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- Cart Notification Script -->
+    <script>
+        // Cart management functions
+        const cartManager = {
+            // Get cart from localStorage
+            getCart: function() {
+                const cart = localStorage.getItem('shoppingCart');
+                return cart ? JSON.parse(cart) : [];
+            },
+
+            // Save cart to localStorage
+            saveCart: function(cart) {
+                localStorage.setItem('shoppingCart', JSON.stringify(cart));
+                this.updateCartBadge();
+            },
+
+            // Add item to cart
+            addToCart: function(productId, productName, price, quantity = 1) {
+                let cart = this.getCart();
+                const existingItem = cart.find(item => item.productId === productId);
+
+                if (existingItem) {
+                    existingItem.quantity += quantity;
+                } else {
+                    cart.push({
+                        productId: productId,
+                        productName: productName,
+                        price: price,
+                        quantity: quantity,
+                        addedAt: new Date().toISOString()
+                    });
+                }
+
+                this.saveCart(cart);
+                return cart;
+            },
+
+            // Remove item from cart
+            removeFromCart: function(productId) {
+                let cart = this.getCart();
+                cart = cart.filter(item => item.productId !== productId);
+                this.saveCart(cart);
+                return cart;
+            },
+
+            // Update item quantity
+            updateQuantity: function(productId, quantity) {
+                let cart = this.getCart();
+                const item = cart.find(item => item.productId === productId);
+
+                if (item) {
+                    if (quantity <= 0) {
+                        return this.removeFromCart(productId);
+                    }
+                    item.quantity = quantity;
+                }
+
+                this.saveCart(cart);
+                return cart;
+            },
+
+            // Clear entire cart
+            clearCart: function() {
+                localStorage.removeItem('shoppingCart');
+                this.updateCartBadge();
+            },
+
+            // Get total items count
+            getTotalItems: function() {
+                const cart = this.getCart();
+                return cart.reduce((total, item) => total + item.quantity, 0);
+            },
+
+            // Get total price
+            getTotalPrice: function() {
+                const cart = this.getCart();
+                return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+            },
+
+            // Update cart badge in navbar
+            updateCartBadge: function() {
+                const totalItems = this.getTotalItems();
+                const cartBadge = document.getElementById('cartBadge');
+
+                if (cartBadge) {
+                    if (totalItems > 0) {
+                        cartBadge.textContent = totalItems;
+                        cartBadge.style.display = 'block';
+
+                        // Add animation
+                        cartBadge.classList.add('animate__animated', 'animate__bounce');
+                        setTimeout(() => {
+                            cartBadge.classList.remove('animate__bounce');
+                        }, 1000);
+                    } else {
+                        cartBadge.style.display = 'none';
+                    }
+                }
+            },
+
+            // Show add to cart notification
+            showCartNotification: function(productName) {
+                // Create toast notification
+                const toastContainer = document.createElement('div');
+                toastContainer.className = 'position-fixed top-0 end-0 p-3';
+                toastContainer.style.zIndex = '9999';
+                toastContainer.innerHTML = `
+                    <div class="toast show" role="alert">
+                        <div class="toast-header bg-success text-white">
+                            <i class="bi bi-check-circle me-2"></i>
+                            <strong class="me-auto">Added to Cart!</strong>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                        </div>
+                        <div class="toast-body">
+                            <strong>${productName}</strong> has been added to your cart.
+                            <div class="mt-2">
+                                <a href="/Cart" class="btn btn-sm btn-outline-success">View Cart</a>
+                                <button class="btn btn-sm btn-success" onclick="cartManager.continueShopping()">Continue Shopping</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(toastContainer);
+
+                // Auto remove after 5 seconds
+                setTimeout(() => {
+                    toastContainer.remove();
+                }, 5000);
+            },
+
+            // Continue shopping (close notification)
+            continueShopping: function() {
+                document.querySelectorAll('.toast').forEach(toast => {
+                    toast.remove();
+                });
+            }
+        };
+
+        // Initialize cart badge on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            cartManager.updateCartBadge();
+
+            // Add event listeners to all "Add to Cart" buttons
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-product-id');
+                    const productName = this.closest('.card').querySelector('.card-title').textContent;
+                    const priceText = this.closest('.card').querySelector('.text-primary').textContent;
+                    const price = parseFloat(priceText.replace('R', '').trim());
+
+                    // Add to cart
+                    cartManager.addToCart(productId, productName, price, 1);
+
+                    // Show notification
+                    cartManager.showCartNotification(productName);
+
+                    // Optional: Add button animation
+                    this.innerHTML = '<i class="bi bi-check me-1"></i>Added!';
+                    this.classList.remove('btn-success');
+                    this.classList.add('btn-secondary');
+                    this.disabled = true;
+
+                    // Reset button after 2 seconds
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="bi bi-cart-plus me-1"></i>Add to Cart';
+                        this.classList.remove('btn-secondary');
+                        this.classList.add('btn-success');
+                        this.disabled = false;
+                    }, 2000);
+                });
+            });
+
+            // Optional: Add CSS for animations
+            if (!document.querySelector('#cartStyles')) {
+                const style = document.createElement('style');
+                style.id = 'cartStyles';
+                style.textContent = `
+                    /* Cart badge styles */
+                    #cartBadge {
+                        font-size: 0.7rem;
+                        padding: 0.25em 0.6em;
+                        min-width: 1.5em;
+                    }
+
+                    /* Toast notification styles */
+                    .toast {
+                        min-width: 300px;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                        border: none;
+                    }
+
+                    /* Cart link hover effect */
+                    .nav-link[href*="Cart"]:hover #cartBadge {
+                        transform: scale(1.1);
+                        transition: transform 0.2s ease;
+                    }
+
+                    /* Pulse animation for cart badge */
+                   @@keyframes pulse {
+                        0% { transform: scale(1); }
+                        50% { transform: scale(1.2); }
+                        100% { transform: scale(1); }
+                    }
+
+                    .cart-pulse {
+                        animation: pulse 0.5s ease-in-out;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        });
+
+        // Make cartManager available globally
+        window.cartManager = cartManager;
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,116 @@
+﻿@model List<MyShop.Models.Product>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container mt-4">
+    <!-- Welcome Section -->
+    <div class="jumbotron bg-light p-5 rounded mb-4">
+        <h1 class="display-4">Welcome to MyShop!</h1>
+        <p class="lead">Your one-stop shop for amazing products.</p>
+        <hr class="my-4">
+
+        <!-- Cart Summary (optional) -->
+        <div class="cart-summary d-none d-md-block">
+            <p><i class="bi bi-cart me-2"></i>Items in cart: <span id="cartItemCount">0</span></p>
+        </div>
+    </div>
+
+    <!-- Featured Products -->
+    <h2 class="text-center mb-4">Featured Products</h2>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            @foreach (var product in Model)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <!-- Product Image -->
+                        <div class="text-center p-3" style="height: 200px; background-color: #f8f9fa;">
+                            @if (!string.IsNullOrEmpty(product.ImageFileName))
+                            {
+                                <img src="~/images/products/@product.ImageFileName"
+                                     class="img-fluid h-100"
+                                     style="object-fit: contain;"
+                                     alt="@product.Name" />
+                            }
+                            else
+                            {
+                                <i class="bi bi-image text-muted" style="font-size: 4rem; padding-top: 50px;"></i>
+                                <p class="text-muted mt-2">No image</p>
+                            }
+                        </div>
+
+                        <div class="card-body">
+                            <h5 class="card-title">@product.Name</h5>
+                            <p class="card-text small text-muted mb-1">
+                                <i class="bi bi-tag"></i> @product.Category?.CategoryName
+                            </p>
+
+                            <!-- Stock Status -->
+                            <div class="mb-2">
+                                <span class="badge bg-@product.StockStatusColor">
+                                    @product.StockStatus (@product.StockQuantity)
+                                </span>
+                                @if (product.IsLowStock && product.StockQuantity > 0)
+                                {
+                                    <small class="text-warning d-block">
+                                        <i class="bi bi-exclamation-triangle"></i> Low stock
+                                    </small>
+                                }
+                            </div>
+
+                            <p class="card-text fw-bold text-primary">
+                                R @product.Price.ToString("0.00")
+                            </p>
+
+                            <div class="d-flex justify-content-between">
+                                <button class="btn btn-sm btn-success add-to-cart"
+                                        data-product-id="@product.ProductId"
+                                        data-product-name="@product.Name"
+                                        data-product-price="@product.Price">
+                                    <i class="bi bi-cart-plus me-1"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+    }
+    else
+    {
+        <div class="alert alert-info text-center py-5">
+            <div class="mb-3">
+                <i class="bi bi-box text-muted" style="font-size: 4rem;"></i>
+            </div>
+            <h4>No products available yet</h4>
+            <p class="mb-4">Get started by adding your first product</p>
+            <a asp-controller="Product" asp-action="Create" class="btn btn-primary btn-lg">
+                <i class="bi bi-plus-circle me-2"></i>Add Your First Product
+            </a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Update cart summary on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const cartItemCount = document.getElementById('cartItemCount');
+            if (cartItemCount) {
+                cartItemCount.textContent = cartManager.getTotalItems();
+            }
+        });
+
+        // Listen for cart updates to update the summary
+        window.addEventListener('cartUpdated', function() {
+            const cartItemCount = document.getElementById('cartItemCount');
+            if (cartItemCount) {
+                cartItemCount.textContent = cartManager.getTotalItems();
+            }
+        });
+    </script>
+}

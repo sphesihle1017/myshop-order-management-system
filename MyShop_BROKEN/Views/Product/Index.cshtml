@@ -1,0 +1,327 @@
+﻿@model List<MyShop.Models.Product>
+@{
+    ViewData["Title"] = "Product Management";
+}
+
+<div class="container mt-4">
+    <!-- Welcome Section -->
+    <div class="jumbotron bg-light p-5 rounded mb-4">
+        <h1 class="display-4">Product Manager!</h1>
+        <p class="lead">Your one-stop shop for amazing products.</p>
+        <hr class="my-4">
+        <div class="row">
+            <div class="col-md-6">
+                <p><i class="bi bi-box me-2"></i>Products: <strong>@ViewBag.ProductCount</strong></p>
+                <p><i class="bi bi-tags me-2"></i>Categories: <strong>@ViewBag.CategoryCount</strong></p>
+            </div>
+           
+        </div>
+       
+    </div>
+
+   
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-box-seam" style="font-size: 2.5rem;"></i>
+                    <h5 class="card-title mt-2">Products</h5>
+                    <a asp-controller="Product" asp-action="Index" class="btn btn-light btn-sm">
+                        Manage Products
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white bg-success h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-plus-circle" style="font-size: 2.5rem;"></i>
+                    <h5 class="card-title mt-2">Add Product</h5>
+                    <a asp-controller="Product" asp-action="Create" class="btn btn-light btn-sm">
+                        Create New
+                    </a>
+                </div>
+            </div>
+        </div>
+       
+        <div class="col-md-3">
+            <div class="card text-white bg-info h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-tags" style="font-size: 2.5rem;"></i>
+                    <h5 class="card-title mt-2">Categories</h5>
+                    <a asp-controller="Category" asp-action="Index" class="btn btn-light btn-sm">
+                        Manage Categories
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-info h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-headset" style="font-size: 2.5rem;"></i>
+                <h5 class="card-title mt-2">Register Admins</h5>
+                <a asp-controller="OrderManager" asp-action="Index" class="btn btn-light btn-sm">
+                    Order Manager
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+   
+    <!-- Featured Products -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-star me-2"></i>Featured Products</h2>
+        <div>
+            <a asp-controller="Product" asp-action="Create" class="btn btn-success">
+                <i class="bi bi-plus-circle me-1"></i>Create Product
+            </a>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            @foreach (var product in Model)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm product-card">
+                        <!-- Product Image -->
+                        <div class="product-image-container text-center p-3">
+                            @if (!string.IsNullOrEmpty(product.ImageFileName))
+                            {
+                                <img src="~/images/products/@product.ImageFileName"
+                                     class="img-fluid h-100 product-image"
+                                     alt="@product.Name" />
+                            }
+                            else
+                            {
+                                <i class="bi bi-image text-muted product-placeholder"></i>
+                                <p class="text-muted mt-2">No image</p>
+                            }
+                        </div>
+
+                        <div class="card-body">
+                            <h5 class="card-title">@product.Name</h5>
+                            <p class="card-text small text-muted mb-1">
+                                <i class="bi bi-tag"></i> @product.Category?.CategoryName
+                            </p>
+
+                            <!-- Stock Status -->
+                            <div class="stock-info mb-2">
+                                <span class="badge bg-@product.StockStatusColor stock-badge">
+                                    @product.StockStatus (@product.StockQuantity)
+                                </span>
+                                @if (product.IsLowStock && product.StockQuantity > 0)
+                                {
+                                    <small class="text-warning d-block mt-1">
+                                        <i class="bi bi-exclamation-triangle"></i> Low stock - reorder soon
+                                    </small>
+                                }
+                            </div>
+
+                            <p class="card-text fw-bold text-primary price-display">
+                                <i class="bi bi-currency"></i> R @product.Price.ToString("0.00")
+                            </p>
+
+                            <!-- Action Buttons -->
+                            <div class="d-flex justify-content-between mt-3">
+                                <a asp-controller="Product" asp-action="Details" asp-route-id="@product.ProductId"
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye me-1"></i>View
+                                </a>
+                                <a asp-controller="Product" asp-action="Edit" asp-route-id="@product.ProductId"
+                                   class="btn btn-sm btn-outline-warning">
+                                    <i class="bi bi-pencil me-1"></i>Edit
+                                </a>
+                              
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- More Options -->
+        <div class="text-center mt-5">
+            <div class="btn-group" role="group">
+                <a asp-controller="Product" asp-action="Index" class="btn btn-primary btn-lg">
+                    <i class="bi bi-grid me-2"></i>View All Products
+                </a>
+                <a asp-controller="Product" asp-action="Create" class="btn btn-success btn-lg ms-2">
+                    <i class="bi bi-plus-circle me-2"></i>Create New Product
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center py-5">
+            <div class="mb-3">
+                <i class="bi bi-box text-muted" style="font-size: 4rem;"></i>
+            </div>
+            <h4>No products available yet</h4>
+            <p class="mb-4">Get started by adding your first product to showcase here</p>
+            <div class="mt-4">
+                <a asp-controller="Product" asp-action="Create" class="btn btn-primary btn-lg me-3">
+                    <i class="bi bi-plus-circle me-2"></i>Create Your First Product
+                </a>
+                <a asp-controller="Category" asp-action="Create" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-tags me-2"></i>Create Category First
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Quick Create Modal (Optional) -->
+<div class="modal fade" id="quickCreateModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Quick Create Product</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>For full product creation with images and stock management, please use the main Create page.</p>
+                <div class="text-center">
+                    <a asp-controller="Product" asp-action="Create" class="btn btn-success btn-lg">
+                        <i class="bi bi-plus-circle me-2"></i>Go to Create Page
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #e9ecef;
+        }
+
+            .product-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+                border-color: #0d6efd;
+            }
+
+        .product-image-container {
+            height: 200px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .product-image {
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+
+        .product-placeholder {
+            font-size: 4rem;
+            padding-top: 50px;
+            color: #adb5bd;
+        }
+
+        .stock-badge {
+            font-size: 0.9rem;
+            padding: 0.4em 0.8em;
+        }
+
+        .price-display {
+            font-size: 1.2rem;
+            color: #198754 !important;
+        }
+
+        .jumbotron {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 1px solid #dee2e6;
+        }
+
+        .card {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        // Add to cart functionality
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.getAttribute('data-product-id');
+
+                // Show loading state
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Adding...';
+                this.disabled = true;
+
+                // Simulate API call
+                setTimeout(() => {
+                    // Show success message
+                    const toast = document.createElement('div');
+                    toast.className = 'position-fixed bottom-0 end-0 p-3';
+                    toast.style.zIndex = '11';
+                    toast.innerHTML = `
+                        <div class="toast show" role="alert">
+                            <div class="toast-header bg-success text-white">
+                                <i class="bi bi-check-circle me-2"></i>
+                                <strong class="me-auto">Success!</strong>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                            </div>
+                            <div class="toast-body">
+                                Product added to cart successfully!
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(toast);
+
+                    // Remove toast after 3 seconds
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 3000);
+
+                    // Reset button
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                }, 1000);
+            });
+        });
+
+        // Quick create modal trigger (if you want a modal)
+        document.getElementById('quickCreateBtn')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            const modal = new bootstrap.Modal(document.getElementById('quickCreateModal'));
+            modal.show();
+        });
+
+        // Update stock status colors on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.stock-badge').forEach(badge => {
+                const text = badge.textContent.toLowerCase();
+                if (text.includes('out of stock')) {
+                    badge.className = 'badge bg-danger stock-badge';
+                } else if (text.includes('low stock')) {
+                    badge.className = 'badge bg-warning stock-badge';
+                } else {
+                    badge.className = 'badge bg-success stock-badge';
+                }
+            });
+        });
+    </script>
+}

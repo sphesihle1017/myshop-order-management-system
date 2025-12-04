@@ -1,0 +1,353 @@
+﻿@model MyShop.Models.UserDetailsViewModel
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">
+                        <i class="bi bi-person-badge me-2"></i>User Details
+                    </h3>
+                    <div>
+                        <span class="badge bg-light text-primary fs-6 me-2">
+                            Status: <span class="badge @(Model.Status == "Active" ? "bg-success" : "bg-danger")">@Model.Status</span>
+                        </span>
+                        <a asp-action="Index" class="btn btn-light btn-sm">
+                            <i class="bi bi-arrow-left me-1"></i>Back to List
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle me-2"></i>@TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <div class="row">
+                        <!-- User Info Card -->
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Basic Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <dl class="row">
+                                        <dt class="col-sm-4">Email:</dt>
+                                        <dd class="col-sm-8">
+                                            @Model.Email
+                                            @if (Model.EmailConfirmed)
+                                            {
+                                                <span class="badge bg-success ms-2">Confirmed</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning text-dark ms-2">Not Confirmed</span>
+                                            }
+                                        </dd>
+
+                                        <dt class="col-sm-4">Username:</dt>
+                                        <dd class="col-sm-8">@Model.UserName</dd>
+
+                                        <dt class="col-sm-4">Phone:</dt>
+                                        <dd class="col-sm-8">
+                                            @if (!string.IsNullOrEmpty(Model.PhoneNumber))
+                                            {
+                                                @Model.PhoneNumber
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Not set</span>
+                                            }
+                                        </dd>
+
+                                        <dt class="col-sm-4">Account Status:</dt>
+                                        <dd class="col-sm-8">
+                                            <span class="badge @(Model.Status == "Active" ? "bg-success" : "bg-danger")">
+                                                @Model.Status
+                                            </span>
+                                            @if (Model.IsLockedOut)
+                                            {
+                                                <div class="mt-1">
+                                                    <small class="text-danger">
+                                                        <i class="bi bi-lock"></i> Locked until: @Model.LockoutEnd?.ToString("f")
+                                                    </small>
+                                                </div>
+                                            }
+                                        </dd>
+
+                                        <dt class="col-sm-4">Failed Logins:</dt>
+                                        <dd class="col-sm-8">
+                                            <span class="@(Model.AccessFailedCount > 0 ? "text-danger" : "text-success")">
+                                                @Model.AccessFailedCount
+                                            </span>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Security Card -->
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header bg-warning text-dark">
+                                    <h5 class="mb-0"><i class="bi bi-shield-check me-2"></i>Security Settings</h5>
+                                </div>
+                                <div class="card-body">
+                                    <dl class="row">
+                                        <dt class="col-sm-6">Two-Factor Enabled:</dt>
+                                        <dd class="col-sm-6">
+                                            @if (Model.TwoFactorEnabled)
+                                            {
+                                                <span class="badge bg-success">Yes</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">No</span>
+                                            }
+                                        </dd>
+
+                                        <dt class="col-sm-6">Lockout Enabled:</dt>
+                                        <dd class="col-sm-6">
+                                            @if (Model.LockoutEnabled)
+                                            {
+                                                <span class="badge bg-success">Yes</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">No</span>
+                                            }
+                                        </dd>
+
+                                        <dt class="col-sm-6">Lockout Status:</dt>
+                                        <dd class="col-sm-6">
+                                            @if (Model.IsLockedOut)
+                                            {
+                                                <span class="badge bg-danger">Locked</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-success">Not Locked</span>
+                                            }
+                                        </dd>
+                                    </dl>
+
+                                    <!-- Quick Actions -->
+                                    <div class="mt-4">
+                                        <h6><i class="bi bi-lightning-charge me-1"></i>Quick Actions:</h6>
+                                        <div class="btn-group w-100" role="group">
+                                            @if (Model.IsLockedOut)
+                                            {
+                                                <form asp-action="ToggleLockout" method="post" class="w-50">
+                                                    <input type="hidden" name="id" value="@Model.UserId" />
+                                                    <button type="submit" class="btn btn-success w-100">
+                                                        <i class="bi bi-unlock me-1"></i>Unlock
+                                                    </button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <form asp-action="ToggleLockout" method="post" class="w-50">
+                                                    <input type="hidden" name="id" value="@Model.UserId" />
+                                                    <button type="submit" class="btn btn-warning w-100">
+                                                        <i class="bi bi-lock me-1"></i>Lock
+                                                    </button>
+                                                </form>
+                                            }
+
+                                            <button type="button" class="btn btn-info w-50" data-bs-toggle="modal" data-bs-target="#resetPasswordModal">
+                                                <i class="bi bi-key me-1"></i>Reset Password
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Roles Card -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="bi bi-shield-check me-2"></i>User Roles</h5>
+                            <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#editRolesModal">
+                                <i class="bi bi-pencil me-1"></i>Edit Roles
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            @if (Model.CurrentRoles.Any())
+                            {
+                                <div class="d-flex flex-wrap gap-2">
+                                    @foreach (var role in Model.CurrentRoles)
+                                    {
+                                        <span class="badge fs-6 p-2
+                                                    @(role == "Admin" ? "bg-danger" :
+                                                                                            role == "Manager" ? "bg-warning text-dark" :
+                                                                                            "bg-success")">
+                                    <i class="bi bi-shield-check me-1"></i>@role
+                                </span>
+                                                                }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-center py-3">
+                                    <i class="bi bi-shield-slash display-4 text-muted"></i>
+                                    <p class="mt-3 text-muted">This user has no roles assigned.</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted">
+                            <i class="bi bi-clock-history me-1"></i>
+                            User ID: @Model.UserId
+                        </small>
+                        <form asp-action="Delete" method="post" onsubmit="return confirm('Are you sure you want to delete this user? This action cannot be undone.');">
+                            <input type="hidden" name="id" value="@Model.UserId" />
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash me-1"></i>Delete User
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Roles Modal -->
+<div class="modal fade" id="editRolesModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Edit User Roles</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="EditRoles" method="post">
+                <input type="hidden" name="userId" value="@Model.UserId" />
+                <div class="modal-body">
+                    <p>Editing roles for: <strong>@Model.Email</strong></p>
+                    <div class="mb-3">
+                        <label class="form-label">Select Roles:</label>
+                        @foreach (var role in Model.AllRoles)
+                        {
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox"
+                                       name="roles" value="@role"
+                                       id="role_@role"
+                                       @(Model.CurrentRoles.Contains(role) ? "checked" : "")>
+                                <label class="form-check-label" for="role_@role">
+                                    <span class="badge
+                                            @(role == "Admin" ? "bg-danger" :
+                                                                                    role == "Manager" ? "bg-warning text-dark" :
+                                                                                    "bg-success") me-1">
+                                    @role
+                                </span>
+                                @role
+                            </label>
+                        </div>
+                                                }
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Reset Password Modal -->
+<div class="modal fade" id="resetPasswordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">Reset Password</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="ResetPassword" method="post">
+                <input type="hidden" name="id" value="@Model.UserId" />
+                <div class="modal-body">
+                    <p>Reset password for: <strong>@Model.Email</strong></p>
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">New Password:</label>
+                        <input type="password" class="form-control" id="newPassword" name="newPassword"
+                               required minlength="6" placeholder="Enter new password">
+                        <div class="form-text">Password must be at least 6 characters long.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Confirm Password:</label>
+                        <input type="password" class="form-control" id="confirmPassword"
+                               placeholder="Confirm new password">
+                        <div class="form-text" id="passwordMatch"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-info">Reset Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Password confirmation
+        document.getElementById('newPassword').addEventListener('input', validatePassword);
+        document.getElementById('confirmPassword').addEventListener('input', validatePassword);
+
+        function validatePassword() {
+            const password = document.getElementById('newPassword').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            const matchDiv = document.getElementById('passwordMatch');
+
+            if (confirm.length === 0) {
+                matchDiv.textContent = '';
+                matchDiv.className = 'form-text';
+            } else if (password === confirm) {
+                matchDiv.textContent = '✓ Passwords match';
+                matchDiv.className = 'form-text text-success';
+            } else {
+                matchDiv.textContent = '✗ Passwords do not match';
+                matchDiv.className = 'form-text text-danger';
+            }
+        }
+
+        // Form validation
+        document.querySelector('form[action*="ResetPassword"]').addEventListener('submit', function(e) {
+            const password = document.getElementById('newPassword').value;
+            const confirm = document.getElementById('confirmPassword').value;
+
+            if (password !== confirm) {
+                e.preventDefault();
+                alert('Passwords do not match!');
+                return false;
+            }
+
+            if (password.length < 6) {
+                e.preventDefault();
+                alert('Password must be at least 6 characters long!');
+                return false;
+            }
+        });
+    </script>
+}

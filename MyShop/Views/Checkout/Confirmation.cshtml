@@ -1,0 +1,151 @@
+﻿@{
+    ViewData["Title"] = "Order Confirmation";
+    var orderId = ViewBag.OrderId ?? "000000";
+    var orderTotal = ViewBag.OrderTotal ?? "R 0.00";
+}
+
+<style>
+    .confirmation-container {
+        max-width: 800px;
+        margin: 3rem auto;
+        text-align: center;
+    }
+
+    .success-icon {
+        width: 100px;
+        height: 100px;
+        background-color: #198754;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 2rem;
+        color: white;
+        font-size: 3rem;
+    }
+
+    .order-details-card {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 2rem;
+        margin: 2rem 0;
+        text-align: left;
+    }
+
+    .order-detail {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+        .order-detail:last-child {
+            border-bottom: none;
+        }
+
+    .order-id {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #0d6efd;
+    }
+
+    .whats-next {
+        background-color: #e7f1ff;
+        border-left: 4px solid #0d6efd;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        text-align: left;
+    }
+
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+    }
+</style>
+
+<div class="confirmation-container">
+    <!-- Success Icon -->
+    <div class="success-icon">
+        <i class="bi bi-check-circle"></i>
+    </div>
+
+    <!-- Success Message -->
+    <h1 class="display-5">Order Confirmed!</h1>
+    <p class="lead">Thank you for your purchase. Your order has been successfully placed.</p>
+    <p class="text-muted">Order ID: <span class="order-id">#@orderId</span></p>
+
+    <!-- Order Details -->
+    <div class="order-details-card">
+        <h5 class="mb-3"><i class="bi bi-receipt me-2"></i>Order Summary</h5>
+        <div class="order-detail">
+            <span>Order Number:</span>
+            <strong>#@orderId</strong>
+        </div>
+        <div class="order-detail">
+            <span>Order Date:</span>
+            <span>@DateTime.Now.ToString("dd MMMM yyyy")</span>
+        </div>
+        <div class="order-detail">
+            <span>Order Time:</span>
+            <span>@DateTime.Now.ToString("hh:mm tt")</span>
+        </div>
+        <div class="order-detail">
+            <span>Total Amount:</span>
+            <strong class="text-primary">@orderTotal</strong>
+        </div>
+        <div class="order-detail">
+            <span>Status:</span>
+            <span class="badge bg-success">Processing</span>
+        </div>
+    </div>
+
+    <!-- What's Next -->
+    <div class="whats-next">
+        <h5><i class="bi bi-info-circle me-2"></i>What happens next?</h5>
+        <ul class="mt-3">
+            <li>You will receive an order confirmation email shortly</li>
+            <li>We'll process your order within 24 hours</li>
+            <li>You'll receive tracking information once your order ships</li>
+            <li>Expected delivery: 3-5 business days</li>
+        </ul>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg">
+            <i class="bi bi-house me-2"></i>Continue Shopping
+        </a>
+        <a asp-controller="Checkout" asp-action="Order" asp-route-id="@orderId" class="btn btn-outline-primary btn-lg">
+            <i class="bi bi-eye me-2"></i>View Order Details
+        </a>
+        <button class="btn btn-success btn-lg" onclick="window.print()">
+            <i class="bi bi-printer me-2"></i>Print Receipt
+        </button>
+    </div>
+
+    <!-- Contact Information -->
+    <div class="mt-5 pt-4 border-top">
+        <p class="text-muted">
+            <i class="bi bi-envelope me-2"></i>Need help? Contact us at
+            <a href="mailto:support@myshop.com">support@myshop.com</a>
+        </p>
+        <p class="text-muted small">
+            <i class="bi bi-clock me-2"></i>Support hours: Monday-Friday, 9AM-5PM
+        </p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Clear cart after successful checkout
+        cartManager.clearCart();
+
+        // Optional: Send order confirmation to server
+        setTimeout(() => {
+            console.log('Order #@orderId completed successfully');
+        }, 1000);
+    });
+</script>
