@@ -5,6 +5,12 @@
 }
 
 <style>
+   footer{
+       visibility:hidden;
+   }
+   nav{
+       visibility:hidden
+   }
     .confirmation-container {
         max-width: 800px;
         margin: 3rem auto;
@@ -94,7 +100,7 @@
         </div>
         <div class="order-detail">
             <span>Total Amount:</span>
-            <strong class="text-primary">@orderTotal</strong>
+            <strong class="text-primary"> @orderTotal</strong>
         </div>
         <div class="order-detail">
             <span>Status:</span>
@@ -118,9 +124,7 @@
         <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg">
             <i class="bi bi-house me-2"></i>Continue Shopping
         </a>
-        <a asp-controller="Checkout" asp-action="Order" asp-route-id="@orderId" class="btn btn-outline-primary btn-lg">
-            <i class="bi bi-eye me-2"></i>View Order Details
-        </a>
+        
         <button class="btn btn-success btn-lg" onclick="window.print()">
             <i class="bi bi-printer me-2"></i>Print Receipt
         </button>
