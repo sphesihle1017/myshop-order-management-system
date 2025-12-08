@@ -59,6 +59,14 @@
                                     <span class="badge bg-secondary">@Model.Category?.CategoryName</span>
                                 </dd>
 
+                                @if (!string.IsNullOrEmpty(Model.Size))
+                                {
+                                    <dt class="col-sm-4">Size:</dt>
+                                    <dd class="col-sm-8">
+                                        <span class="badge bg-info">@Model.Size</span>
+                                    </dd>
+                                }
+
                                 <dt class="col-sm-4">Stock Quantity:</dt>
                                 <dd class="col-sm-8">
                                     <span class="badge bg-@Model.StockStatusColor">@Model.StockQuantity units</span>

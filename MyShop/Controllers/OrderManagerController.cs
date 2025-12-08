@@ -27,12 +27,8 @@ namespace MyShop.Controllers
             ViewBag.CurrentSort = sort;
             ViewBag.SearchTerm = search;
 
-            // To this (if you want to include OrderItems):
-            var orders = _context.Checkouts.Include(o => o.OrderItems).AsQueryable();
-            // OR this (if you just want orders without items temporarily):
-            
-
-            
+            // Query with proper model linking - Use Checkout as the main model
+            var orders = _context.Checkouts.AsQueryable();
 
             // Filter by status
             if (!string.IsNullOrEmpty(status) && status != "all")
@@ -49,8 +45,8 @@ namespace MyShop.Controllers
                     o.LastName.Contains(search) ||
                     o.Email.Contains(search) ||
                     o.Phone.Contains(search) ||
-                    o.TrackingNumber.Contains(search) ||
-                    o.InternalReference.Contains(search));
+                    (o.TrackingNumber != null && o.TrackingNumber.Contains(search)) ||
+                    (o.InternalReference != null && o.InternalReference.Contains(search)));
             }
 
             // Sort
@@ -99,23 +95,21 @@ namespace MyShop.Controllers
                 return NotFound();
             }
 
-            // Get order history (in a real app, you'd have an OrderHistory table)
-            ViewBag.OrderHistory = GetOrderHistory(id);
-
             return View(order);
         }
 
         // GET: /OrderManager/Edit/{id}
         public async Task<IActionResult> Edit(int id)
         {
-            var order = await _context.Checkouts.FindAsync(id);
+            var order = await _context.Checkouts
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
 
             if (order == null)
             {
                 return NotFound();
             }
 
-            // Prepare dropdown lists
             ViewBag.StatusList = new SelectList(new[]
             {
                 new { Value = "Pending", Text = "Pending" },
@@ -169,7 +163,10 @@ namespace MyShop.Controllers
                 return NotFound();
             }
 
-            var existingOrder = await _context.Checkouts.FindAsync(id);
+            var existingOrder = await _context.Checkouts
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
+
             if (existingOrder == null)
             {
                 return NotFound();
@@ -201,6 +198,10 @@ namespace MyShop.Controllers
                     // Handle specific actions
                     switch (actionType)
                     {
+                        case "mark-processing":
+                            existingOrder.OrderStatus = "Processing";
+                            TempData["SuccessMessage"] = $"Order #{id} marked as Processing";
+                            break;
                         case "mark-paid":
                             existingOrder.PaymentStatus = "Paid";
                             TempData["SuccessMessage"] = $"Order #{id} marked as Paid";
@@ -226,17 +227,17 @@ namespace MyShop.Controllers
                             // In a real app, you would generate an invoice PDF
                             TempData["SuccessMessage"] = $"Invoice generated for order #{id}";
                             break;
+                        case "set-high-priority":
+                            existingOrder.Priority = "High";
+                            TempData["SuccessMessage"] = $"Order #{id} set to High Priority";
+                            break;
+                        case "put-on-hold":
+                            existingOrder.OrderStatus = "On Hold";
+                            TempData["SuccessMessage"] = $"Order #{id} put on Hold";
+                            break;
                         default: // save
                             TempData["SuccessMessage"] = $"Order #{id} updated successfully";
                             break;
-                    }
-
-                    // Add to order history if status changed
-                    if (oldStatus != existingOrder.OrderStatus || oldPaymentStatus != existingOrder.PaymentStatus)
-                    {
-                        AddOrderHistory(id, oldStatus, existingOrder.OrderStatus,
-                                       oldPaymentStatus, existingOrder.PaymentStatus,
-                                       User.Identity?.Name);
                     }
 
                     _context.Update(existingOrder);
@@ -291,9 +292,18 @@ namespace MyShop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var order = await _context.Checkouts.FindAsync(id);
+            var order = await _context.Checkouts
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
+
             if (order != null)
             {
+                // Delete order items first (due to foreign key constraint)
+                if (order.OrderItems != null && order.OrderItems.Any())
+                {
+                    _context.OrderItems.RemoveRange(order.OrderItems);
+                }
+
                 _context.Checkouts.Remove(order);
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = $"Order #{id} deleted successfully";
@@ -318,9 +328,9 @@ namespace MyShop.Controllers
         }
 
         // GET: /OrderManager/Export
-        public async Task<IActionResult> Export(string format = "csv", DateTime? startDate = null, DateTime? endDate = null)
+        public async Task<IActionResult> Export(string format = "csv", DateTime? startDate = null, DateTime? endDate = null, string orderIds = "")
         {
-            var orders = _context.Checkouts.Include(o => o.OrderItems).AsQueryable();
+            var orders = _context.Checkouts.AsQueryable();
 
             // Apply date filters
             if (startDate.HasValue)
@@ -333,14 +343,14 @@ namespace MyShop.Controllers
                 orders = orders.Where(o => o.OrderDate <= endDate.Value);
             }
 
-            var orderList = await orders.ToListAsync();
-
-            if (format == "excel")
+            // Filter by selected order IDs if provided
+            if (!string.IsNullOrEmpty(orderIds))
             {
-                // In a real app, you would use EPPlus or similar library
-                // For now, return CSV
-                return ExportToCsv(orderList);
+                var ids = orderIds.Split(',').Select(int.Parse).ToList();
+                orders = orders.Where(o => ids.Contains(o.OrderId));
             }
+
+            var orderList = await orders.ToListAsync();
 
             return ExportToCsv(orderList);
         }
@@ -373,7 +383,11 @@ namespace MyShop.Controllers
             // Top products
             var topProducts = await _context.OrderItems
                 .GroupBy(oi => oi.ProductName)
-                .Select(g => new { ProductName = g.Key, TotalSold = g.Sum(oi => oi.Quantity), Revenue = g.Sum(oi => oi.Total) })
+                .Select(g => new {
+                    ProductName = g.Key,
+                    TotalSold = g.Sum(oi => oi.Quantity),
+                    Revenue = g.Sum(oi => oi.Total)
+                })
                 .OrderByDescending(x => x.TotalSold)
                 .Take(10)
                 .ToListAsync();
@@ -382,7 +396,6 @@ namespace MyShop.Controllers
 
             // Recent orders
             var recentOrders = await _context.Checkouts
-                .Include(o => o.OrderItems)
                 .OrderByDescending(o => o.OrderDate)
                 .Take(10)
                 .ToListAsync();
@@ -392,23 +405,10 @@ namespace MyShop.Controllers
             // Order status distribution
             var statusDistribution = await _context.Checkouts
                 .GroupBy(o => o.OrderStatus)
-                .Select(g => new { Status = g.Key, Count = g.Count() })
+                .Select(g => new { Status = g.Key ?? "Unknown", Count = g.Count() })
                 .ToListAsync();
 
             ViewBag.StatusDistribution = statusDistribution;
-
-            // Monthly revenue chart data
-            var monthlyRevenueData = await _context.Checkouts
-                .Where(o => o.OrderDate >= startOfYear && o.PaymentStatus == "Paid")
-                .GroupBy(o => new { o.OrderDate.Year, o.OrderDate.Month })
-                .Select(g => new {
-                    Month = new DateTime(g.Key.Year, g.Key.Month, 1),
-                    Revenue = g.Sum(o => o.Total)
-                })
-                .OrderBy(x => x.Month)
-                .ToListAsync();
-
-            ViewBag.MonthlyRevenueData = monthlyRevenueData;
 
             return View();
         }
@@ -455,14 +455,22 @@ namespace MyShop.Controllers
                             order.AssignedTo = User.Identity?.Name;
                             break;
                         case "export-selected":
-                            // Will be handled separately
+                            // Will be handled by Export action
                             break;
                     }
                 }
 
-                await _context.SaveChangesAsync();
+                if (action != "export-selected")
+                {
+                    await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = $"{orders.Count} orders updated successfully";
+                }
 
-                TempData["SuccessMessage"] = $"{orders.Count} orders updated successfully";
+                if (action == "export-selected")
+                {
+                    var ids = string.Join(",", orderIds);
+                    return RedirectToAction("Export", new { orderIds = ids });
+                }
             }
             catch (Exception ex)
             {
@@ -512,6 +520,9 @@ namespace MyShop.Controllers
                 totalOrders = orders.Count,
                 totalRevenue = orders.Where(o => o.PaymentStatus == "Paid").Sum(o => o.Total),
                 pendingOrders = orders.Count(o => o.OrderStatus == "Pending"),
+                processingOrders = orders.Count(o => o.OrderStatus == "Processing"),
+                shippedOrders = orders.Count(o => o.OrderStatus == "Shipped"),
+                deliveredOrders = orders.Count(o => o.OrderStatus == "Delivered"),
                 averageOrderValue = orders.Any() ? orders.Average(o => o.Total) : 0
             };
 
@@ -529,64 +540,20 @@ namespace MyShop.Controllers
             return $"TRK{DateTime.Now:yyyyMMddHHmmss}{new Random().Next(1000, 9999)}";
         }
 
-        private List<OrderHistory> GetOrderHistory(int orderId)
-        {
-            // In a real app, you would query an OrderHistory table
-            // For now, return a mock list
-            return new List<OrderHistory>
-            {
-                new OrderHistory
-                {
-                    Id = 1,
-                    OrderId = orderId,
-                    Action = "Order Created",
-                    Description = "Order was placed by customer",
-                    PerformedBy = "System",
-                    PerformedAt = DateTime.Now.AddHours(-2),
-                    OldStatus = null,
-                    NewStatus = "Pending"
-                }
-            };
-        }
-
-        private void AddOrderHistory(int orderId, string oldStatus, string newStatus,
-                                   string oldPaymentStatus, string newPaymentStatus,
-                                   string performedBy)
-        {
-            // In a real app, you would save this to an OrderHistory table
-            _logger.LogInformation($"Order {orderId} status changed from {oldStatus} to {newStatus} by {performedBy}");
-        }
-
         private FileResult ExportToCsv(List<Checkout> orders)
         {
             var csv = new List<string>
             {
-                "OrderID,OrderDate,Customer,Email,Phone,Total,Status,PaymentStatus,TrackingNumber"
+                "OrderID,OrderDate,Customer,Email,Phone,Total,Status,PaymentStatus,TrackingNumber,ShippingCarrier"
             };
 
             foreach (var order in orders)
             {
-                csv.Add($"\"{order.OrderId}\",\"{order.OrderDate:yyyy-MM-dd HH:mm}\",\"{order.FirstName} {order.LastName}\",\"{order.Email}\",\"{order.Phone}\",\"{order.Total}\",\"{order.OrderStatus}\",\"{order.PaymentStatus}\",\"{order.TrackingNumber}\"");
+                csv.Add($"\"{order.OrderId}\",\"{order.OrderDate:yyyy-MM-dd HH:mm}\",\"{order.FirstName} {order.LastName}\",\"{order.Email}\",\"{order.Phone}\",\"{order.Total}\",\"{order.OrderStatus}\",\"{order.PaymentStatus}\",\"{order.TrackingNumber}\",\"{order.ShippingCarrier}\"");
             }
 
             var bytes = System.Text.Encoding.UTF8.GetBytes(string.Join("\n", csv));
             return File(bytes, "text/csv", $"orders_export_{DateTime.Now:yyyyMMdd_HHmmss}.csv");
         }
-    }
-
-    // Order History model (for tracking changes)
-    public class OrderHistory
-    {
-        public int Id { get; set; }
-        public int OrderId { get; set; }
-        public string Action { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public string PerformedBy { get; set; } = string.Empty;
-        public DateTime PerformedAt { get; set; }
-        public string? OldStatus { get; set; }
-        public string? NewStatus { get; set; }
-        public string? OldPaymentStatus { get; set; }
-        public string? NewPaymentStatus { get; set; }
-        public string? Notes { get; set; }
     }
 }

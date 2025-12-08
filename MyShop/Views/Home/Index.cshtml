@@ -43,6 +43,14 @@
                                 <i class="bi bi-tag"></i> @product.Category?.CategoryName
                             </p>
 
+                            <!-- Size Display -->
+                            @if (!string.IsNullOrEmpty(product.Size))
+                            {
+                                <p class="card-text small text-muted mb-1">
+                                    <i class="bi bi-rulers"></i> @product.Size
+                                </p>
+                            }
+
                             <!-- Stock Status -->
                             <div class="mb-2">
                                 <span class="badge bg-@product.StockStatusColor">
@@ -64,7 +72,8 @@
                                 <button class="btn btn-sm btn-success add-to-cart"
                                         data-product-id="@product.ProductId"
                                         data-product-name="@product.Name"
-                                        data-product-price="@product.Price">
+                                        data-product-price="@product.Price"
+                                        data-product-size="@product.Size">
                                     <i class="bi bi-cart-plus me-1"></i>Add to Cart
                                 </button>
                             </div>
@@ -92,20 +101,125 @@
 
 @section Scripts {
     <script>
-        // Update cart summary on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            const cartItemCount = document.getElementById('cartItemCount');
-            if (cartItemCount) {
-                cartItemCount.textContent = cartManager.getTotalItems();
-            }
+        // Add to cart functionality
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.getAttribute('data-product-id');
+                const productName = this.getAttribute('data-product-name');
+                const productPrice = parseFloat(this.getAttribute('data-product-price'));
+                const productSize = this.getAttribute('data-product-size');
+
+                // Show loading state
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Adding...';
+                this.disabled = true;
+
+                // Create cart item object
+                const cartItem = {
+                    id: productId,
+                    name: productName,
+                    price: productPrice,
+                    size: productSize,
+                    quantity: 1,
+                    image: null // You might want to add image URL if available
+                };
+
+                // Get existing cart from localStorage or initialize
+                let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+                // Check if product already exists in cart
+                const existingItemIndex = cart.findIndex(item => item.id === productId);
+
+                if (existingItemIndex > -1) {
+                    // Update quantity if already in cart
+                    cart[existingItemIndex].quantity += 1;
+                } else {
+                    // Add new item to cart
+                    cart.push(cartItem);
+                }
+
+                // Save to localStorage
+                localStorage.setItem('cart', JSON.stringify(cart));
+
+                // Update cart count in UI
+                updateCartCount();
+
+                // Show success message
+                showToast(`${productName}${productSize ? ' (' + productSize + ')' : ''} added to cart!`, 'success');
+
+                // Reset button after a delay
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                }, 1000);
+            });
         });
 
-        // Listen for cart updates to update the summary
-        window.addEventListener('cartUpdated', function() {
-            const cartItemCount = document.getElementById('cartItemCount');
-            if (cartItemCount) {
-                cartItemCount.textContent = cartManager.getTotalItems();
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+
+            // Update cart count in navbar if it exists
+            const cartCountElements = document.querySelectorAll('.cart-item-count');
+            cartCountElements.forEach(element => {
+                element.textContent = totalItems;
+                element.style.display = totalItems > 0 ? 'inline' : 'none';
+            });
+
+            // Trigger custom event for other components
+            window.dispatchEvent(new Event('cartUpdated'));
+        }
+
+        function showToast(message, type = 'info') {
+            // Create toast container if it doesn't exist
+            let toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toastContainer';
+                toastContainer.className = 'position-fixed top-0 end-0 p-3';
+                toastContainer.style.zIndex = '1050';
+                document.body.appendChild(toastContainer);
             }
+
+            // Create toast element
+            const toastId = 'toast-' + Date.now();
+            const toast = document.createElement('div');
+            toast.id = toastId;
+            toast.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : 'info'} border-0`;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'assertive');
+            toast.setAttribute('aria-atomic', 'true');
+
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="bi ${type === 'success' ? 'bi-check-circle' : 'bi-info-circle'} me-2"></i>
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+
+            toastContainer.appendChild(toast);
+
+            // Initialize Bootstrap toast
+            const bsToast = new bootstrap.Toast(toast, {
+                animation: true,
+                autohide: true,
+                delay: 3000
+            });
+
+            bsToast.show();
+
+            // Remove toast from DOM after it's hidden
+            toast.addEventListener('hidden.bs.toast', function () {
+                toast.remove();
+            });
+        }
+
+        // Initialize cart count on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartCount();
         });
     </script>
 }

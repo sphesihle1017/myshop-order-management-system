@@ -1,22 +1,13 @@
 ﻿@model MyShop.Models.Checkout
 
 @{
-    ViewData["Title"] = $"Order #{Model.OrderId} Details";
+    ViewData["Title"] = "Order Details";
     ViewData["ActivePage"] = "Orders";
 }
 
 <div class="container-fluid">
-    <!-- Order Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h2">Order #@Model.OrderId</h1>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="@Url.Action("Index")">Orders</a></li>
-                    <li class="breadcrumb-item active">Order #@Model.OrderId</li>
-                </ol>
-            </nav>
-        </div>
+        <h1 class="h2">Order #@Model.OrderId</h1>
         <div class="btn-group">
             <a href="@Url.Action("Edit", new { id = Model.OrderId })" class="btn btn-primary">
                 <i class="fas fa-edit"></i> Edit Order
@@ -24,103 +15,73 @@
             <a href="@Url.Action("Print", new { id = Model.OrderId })" class="btn btn-secondary" target="_blank">
                 <i class="fas fa-print"></i> Print
             </a>
-            <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
-                Quick Actions
-            </button>
-            <div class="dropdown-menu">
-                @if (Model.PaymentStatus != "Paid")
-                {
-                    <form method="post" asp-action="Edit" asp-route-id="@Model.OrderId" style="display: inline;">
-                        <input type="hidden" name="actionType" value="mark-paid">
-                        <button type="submit" class="dropdown-item">
-                            <i class="fas fa-check-circle text-success"></i> Mark as Paid
-                        </button>
-                    </form>
-                }
-                @if (Model.OrderStatus != "Shipped")
-                {
-                    <form method="post" asp-action="Edit" asp-route-id="@Model.OrderId" style="display: inline;">
-                        <input type="hidden" name="actionType" value="mark-shipped">
-                        <button type="submit" class="dropdown-item">
-                            <i class="fas fa-shipping-fast text-info"></i> Mark as Shipped
-                        </button>
-                    </form>
-                }
-                @if (Model.OrderStatus != "Delivered")
-                {
-                    <form method="post" asp-action="Edit" asp-route-id="@Model.OrderId" style="display: inline;">
-                        <input type="hidden" name="actionType" value="mark-delivered">
-                        <button type="submit" class="dropdown-item">
-                            <i class="fas fa-truck text-success"></i> Mark as Delivered
-                        </button>
-                    </form>
-                }
-                <div class="dropdown-divider"></div>
-                <a href="@Url.Action("Delete", new { id = Model.OrderId })" class="dropdown-item text-danger">
-                    <i class="fas fa-trash"></i> Delete Order
-                </a>
-            </div>
+            <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Orders
+            </a>
         </div>
     </div>
 
-    <!-- Status Indicators -->
+    <!-- Order Status Banner -->
     <div class="row mb-4">
-        <div class="col-md-8">
-            <div class="card">
+        <div class="col-12">
+            <div class="card shadow">
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-3 text-center">
-                            <div class="mb-2">
-                                <i class="fas fa-@(Model.OrderStatus == "Pending" ? "clock" : "check-circle") fa-2x
-                                   text-@(Model.OrderStatus == "Pending" ? "warning" : "success")"></i>
+                    <div class="row align-items-center">
+                        <div class="col-md-3">
+                            <div class="d-flex align-items-center">
+                                <div class="mr-3">
+                                    <div class="rounded-circle bg-@(GetStatusColor(Model.OrderStatus)) p-3">
+                                        <i class="fas fa-shopping-cart fa-2x text-white"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0">Order Status</h5>
+                                    <span class="badge badge-@GetStatusBadgeColor(Model.OrderStatus) badge-lg">
+                                        @Model.OrderStatus
+                                    </span>
+                                </div>
                             </div>
-                            <h6>Order Placed</h6>
-                            <small>@Model.OrderDate.ToString("MMM dd, yyyy HH:mm")</small>
                         </div>
-                        <div class="col-md-3 text-center">
-                            <div class="mb-2">
-                                <i class="fas fa-@(Model.OrderStatus == "Processing" ? "cogs" :
-                                                                                    Model.OrderStatus == "Shipped" || Model.OrderStatus == "Delivered" ? "check-circle" : "clock") fa-2x
-                                   text-@(Model.OrderStatus == "Processing" ? "info" :
-                                                                            Model.OrderStatus == "Shipped" || Model.OrderStatus == "Delivered" ? "success" : "muted")"></i>
+                        <div class="col-md-3">
+                            <div class="d-flex align-items-center">
+                                <div class="mr-3">
+                                    <div class="rounded-circle bg-@(GetPaymentColor(Model.PaymentStatus)) p-3">
+                                        <i class="fas fa-credit-card fa-2x text-white"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0">Payment</h5>
+                                    <span class="badge badge-@GetPaymentBadgeColor(Model.PaymentStatus) badge-lg">
+                                        @Model.PaymentStatus
+                                    </span>
+                                </div>
                             </div>
-                            <h6>Processing</h6>
                         </div>
-                        <div class="col-md-3 text-center">
-                            <div class="mb-2">
-                                <i class="fas fa-@(Model.OrderStatus == "Shipped" ? "shipping-fast" :
-                                                                                    Model.OrderStatus == "Delivered" ? "check-circle" : "clock") fa-2x
-                                   text-@(Model.OrderStatus == "Shipped" ? "primary" :
-                                                                            Model.OrderStatus == "Delivered" ? "success" : "muted")"></i>
+                        <div class="col-md-3">
+                            <div class="d-flex align-items-center">
+                                <div class="mr-3">
+                                    <div class="rounded-circle bg-info p-3">
+                                        <i class="fas fa-calendar fa-2x text-white"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0">Order Date</h5>
+                                    <p class="mb-0">@Model.OrderDate.ToString("MMMM dd, yyyy HH:mm")</p>
+                                </div>
                             </div>
-                            <h6>Shipped</h6>
                         </div>
-                        <div class="col-md-3 text-center">
-                            <div class="mb-2">
-                                <i class="fas fa-@(Model.OrderStatus == "Delivered" ? "truck" : "clock") fa-2x
-                                   text-@(Model.OrderStatus == "Delivered" ? "success" : "muted")"></i>
+                        <div class="col-md-3">
+                            <div class="d-flex align-items-center">
+                                <div class="mr-3">
+                                    <div class="rounded-circle bg-success p-3">
+                                        <i class="fas fa-dollar-sign fa-2x text-white"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0">Total Amount</h5>
+                                    <h3 class="mb-0 text-success">@Model.Total.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</h3>
+                                </div>
                             </div>
-                            <h6>Delivered</h6>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-6 text-center">
-                            <h6>Order Status</h6>
-                            <span class="badge badge-@GetStatusBadgeColor(Model.OrderStatus) badge-lg p-2">
-                                @Model.OrderStatus
-                            </span>
-                        </div>
-                        <div class="col-6 text-center">
-                            <h6>Payment Status</h6>
-                            <span class="badge badge-@GetPaymentBadgeColor(Model.PaymentStatus) badge-lg p-2">
-                                @Model.PaymentStatus
-                            </span>
                         </div>
                     </div>
                 </div>
@@ -129,296 +90,288 @@
     </div>
 
     <div class="row">
-        <!-- Left Column: Order Details -->
-        <div class="col-lg-8">
-            <!-- Order Items -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">Order Items</h5>
+        <!-- Left Column: Customer & Shipping -->
+        <div class="col-lg-4">
+            <!-- Customer Information -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-user mr-2"></i>Customer Information
+                    </h6>
                 </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th>Product</th>
-                                    <th class="text-center">Price</th>
-                                    <th class="text-center">Quantity</th>
-                                    <th class="text-right">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model.OrderItems)
-                                {
-                                    <tr>
-                                        <td>
-                                            <strong>@item.ProductName</strong>
-                                            @if (!string.IsNullOrEmpty(item.ProductName))
-                                            {
-                                                <br>
-                                                <small class="text-muted">@item.ProductName</small>
-                                            }
-                                            
-                                        </td>
-                                        <td class="text-center">@item.Price.ToString("C")</td>
-                                        <td class="text-center">@item.Quantity</td>
-                                        <td class="text-right">@item.Total.ToString("C")</td>
-                                    </tr>
-                                }
-                            </tbody>
-                            <tfoot class="bg-light">
-                                <tr>
-                                    <td colspan="3" class="text-right"><strong>Subtotal:</strong></td>
-                                    <td class="text-right">@Model.Subtotal.ToString("C")</td>
-                                </tr>
-                                @if (Model.Discount > 0)
-                                {
-                                    <tr>
-                                        <td colspan="3" class="text-right"><strong>Discount:</strong></td>
-                                        <td class="text-right text-danger">-@Model.Discount.ToString("C")</td>
-                                    </tr>
-                                }
-                                @if (Model.Tax > 0)
-                                {
-                                    <tr>
-                                        <td colspan="3" class="text-right"><strong>Tax:</strong></td>
-                                        <td class="text-right">@Model.Tax.ToString("C")</td>
-                                    </tr>
-                                }
-                                @if (Model.ShippingCost > 0)
-                                {
-                                    <tr>
-                                        <td colspan="3" class="text-right"><strong>Shipping:</strong></td>
-                                        <td class="text-right">@Model.ShippingCost.ToString("C")</td>
-                                    </tr>
-                                }
-                                <tr class="table-active">
-                                    <td colspan="3" class="text-right"><strong>Total:</strong></td>
-                                    <td class="text-right"><strong>@Model.Total.ToString("C")</strong></td>
-                                </tr>
-                            </tfoot>
-                        </table>
+                <div class="card-body">
+                    <h5 class="font-weight-bold">@Model.FirstName @Model.LastName</h5>
+                    <p class="mb-1">
+                        <i class="fas fa-envelope mr-2 text-muted"></i>
+                        <a href="mailto:@Model.Email">@Model.Email</a>
+                    </p>
+                    <p class="mb-3">
+                        <i class="fas fa-phone mr-2 text-muted"></i>
+                        @Model.Phone
+                    </p>
+
+                    <h6 class="font-weight-bold mt-4">
+                        <i class="fas fa-map-marker-alt mr-2"></i>Shipping Address
+                    </h6>
+                    <p class="mb-1">@Model.Address</p>
+                    <p class="mb-1">@Model.City, @Model.PostalCode</p>
+                    <p class="mb-0">@Model.Country</p>
+                </div>
+            </div>
+
+            <!-- Order Information -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-info-circle mr-2"></i>Order Information
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <p class="mb-2"><strong>Order ID</strong></p>
+                            <p class="mb-2"><strong>Priority</strong></p>
+                            <p class="mb-2"><strong>Assigned To</strong></p>
+                            <p class="mb-2"><strong>Payment Method</strong></p>
+                        </div>
+                        <div class="col-6">
+                            <p class="mb-2">#@Model.OrderId</p>
+                            <p class="mb-2">
+                                <span class="badge badge-@GetPriorityBadgeColor(Model.Priority)">
+                                    @Model.Priority
+                                </span>
+                            </p>
+                            <p class="mb-2">@(Model.AssignedTo ?? "Not Assigned")</p>
+                            <p class="mb-2">@Model.PaymentMethod</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Order History -->
-            @if (ViewBag.OrderHistory != null && ViewBag.OrderHistory.Count > 0)
+            <!-- Shipping Information -->
+            @if (!string.IsNullOrEmpty(Model.TrackingNumber) || !string.IsNullOrEmpty(Model.ShippingCarrier))
             {
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Order History</h5>
+                <div class="card shadow">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            <i class="fas fa-shipping-fast mr-2"></i>Shipping Information
+                        </h6>
                     </div>
                     <div class="card-body">
-                        <div class="timeline">
-                            @foreach (var history in ViewBag.OrderHistory)
-                            {
-                                <div class="timeline-item">
-                                    <div class="timeline-marker"></div>
-                                    <div class="timeline-content">
-                                        <h6>@history.Action</h6>
-                                        <p class="mb-1">@history.Description</p>
-                                        <small class="text-muted">
-                                            @history.PerformedAt.ToString("MMM dd, yyyy HH:mm") by @history.PerformedBy
-                                        </small>
-                                        @if (!string.IsNullOrEmpty(history.OldStatus) || !string.IsNullOrEmpty(history.NewStatus))
-                                        {
-                                            <div class="mt-2">
-                                                @if (!string.IsNullOrEmpty(history.OldStatus))
-                                                {
-                                                    <span class="badge badge-light">@history.OldStatus</span>
-                                                    <i class="fas fa-arrow-right mx-1 text-muted"></i>
-                                                }
-                                                <span class="badge badge-@GetStatusBadgeColor(history.NewStatus)">@history.NewStatus</span>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-                            }
-                        </div>
+                        @if (!string.IsNullOrEmpty(Model.TrackingNumber))
+                        {
+                            <p class="mb-2"><strong>Tracking Number:</strong></p>
+                            <p class="mb-3">
+                                <code>@Model.TrackingNumber</code>
+                                @if (!string.IsNullOrEmpty(Model.ShippingCarrier))
+                                {
+                                    <br>
+                                    <small class="text-muted">via @Model.ShippingCarrier</small>
+                                }
+                            </p>
+                        }
+
+                        @if (Model.EstimatedDelivery.HasValue)
+                        {
+                            <p class="mb-1"><strong>Estimated Delivery:</strong></p>
+                            <p class="mb-3">@Model.EstimatedDelivery.Value.ToString("MMMM dd, yyyy")</p>
+                        }
+
+                        @if (Model.ActualDelivery.HasValue)
+                        {
+                            <p class="mb-1"><strong>Delivered On:</strong></p>
+                            <p class="mb-0">@Model.ActualDelivery.Value.ToString("MMMM dd, yyyy HH:mm")</p>
+                        }
                     </div>
                 </div>
             }
         </div>
 
-        <!-- Right Column: Customer & Shipping Info -->
-        <div class="col-lg-4">
-            <!-- Customer Information -->
-            <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Customer Information</h5>
-                    <a href="#" class="btn btn-sm btn-outline-primary">
-                        <i class="fas fa-envelope"></i> Email
-                    </a>
+        <!-- Right Column: Order Items & Summary -->
+        <div class="col-lg-8">
+            <!-- Order Items -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-shopping-bag mr-2"></i>Order Items
+                    </h6>
                 </div>
                 <div class="card-body">
-                    <h6>@Model.FirstName @Model.LastName</h6>
-                    <p class="mb-1">
-                        <i class="fas fa-envelope mr-2 text-muted"></i>
-                        <a href="mailto:@Model.Email">@Model.Email</a>
-                    </p>
-                    <p class="mb-1">
-                        <i class="fas fa-phone mr-2 text-muted"></i>
-                        @Model.Phone
-                    </p>
-
-                    @if (!string.IsNullOrEmpty(Model.Campaign))
-                    {
-                        <p class="mb-1">
-                            <i class="fas fa-building mr-2 text-muted"></i>
-                            @Model.Campaign
-                        </p>
-                    }
-
-                  
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Product</th>
+                                    <th width="100" class="text-center">Quantity</th>
+                                    <th width="120" class="text-right">Price</th>
+                                    <th width="120" class="text-right">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.OrderItems != null && Model.OrderItems.Any())
+                                {
+                                    foreach (var item in Model.OrderItems)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@item.ProductName</strong>
+                                                <br>
+                                                <small class="text-muted">Product ID: @item.ProductId</small>
+                                            </td>
+                                            <td class="text-center">@item.Quantity</td>
+                                            <td class="text-right">@item.Price.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</td>
+                                            <td class="text-right font-weight-bold">@item.Total.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4">
+                                            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">No items found for this order</p>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <!-- Shipping Information -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">Shipping Information</h5>
+            <!-- Order Summary -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-receipt mr-2"></i>Order Summary
+                    </h6>
                 </div>
                 <div class="card-body">
-                    <h6>Shipping Address</h6>
-                    <p class="mb-1">@Model.FirstName @Model.LastName</p>
-                    <p class="mb-1">@Model.Address</p>
-                    @if (!string.IsNullOrEmpty(Model.Address))
-                    {
-                        <p class="mb-1">@Model.Address</p>
-                    }
-                    <p class="mb-1">@Model.City, @Model.City @Model.PostalCode</p>
-                    <p class="mb-1">@Model.Country</p>
+                    <div class="row">
+                        <div class="col-md-8">
+                            @if (!string.IsNullOrEmpty(Model.AdminNotes))
+                            {
+                                <h6 class="font-weight-bold mb-2">Admin Notes:</h6>
+                                <div class="alert alert-info">
+                                    @Model.AdminNotes
+                                </div>
+                            }
 
-                    @if (!string.IsNullOrEmpty(Model.ShippingCarrier))
-                    {
-                        <hr>
-                        <h6>Shipping Method</h6>
-                        <p class="mb-1">@Model.ShippingCarrier</p>
-                        @if (Model.ShippingCost > 0)
-                        {
-                            <p class="mb-1">Cost: @Model.ShippingCost.ToString("C")</p>
-                        }
-                    }
+                            @if (!string.IsNullOrEmpty(Model.InternalReference))
+                            {
+                                <p class="mb-2"><strong>Internal Reference:</strong> @Model.InternalReference</p>
+                            }
 
-                    @if (!string.IsNullOrEmpty(Model.TrackingNumber))
-                    {
-                        <hr>
-                        <h6>Tracking Information</h6>
-                        <p class="mb-1">
-                            <strong>Tracking #:</strong> @Model.TrackingNumber
-                        </p>
-                        @if (!string.IsNullOrEmpty(Model.ShippingCarrier))
-                        {
-                            <p class="mb-1">
-                                <strong>Carrier:</strong> @Model.ShippingCarrier
-                            </p>
-                        }
-                        @if (!string.IsNullOrEmpty(Model.ShippingService))
-                        {
-                            <p class="mb-1">
-                                <strong>Service:</strong> @Model.ShippingService
-                            </p>
-                        }
-                        <a href="#" class="btn btn-sm btn-outline-primary btn-block mt-2">
-                            <i class="fas fa-external-link-alt"></i> Track Package
-                        </a>
-                    }
+                            @if (!string.IsNullOrEmpty(Model.MarketingSource))
+                            {
+                                <p class="mb-0"><strong>Marketing Source:</strong> @Model.MarketingSource</p>
+                            }
+                        </div>
+                        <div class="col-md-4">
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Subtotal:</strong></td>
+                                    <td class="text-right">@Model.Subtotal.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</td>
+                                </tr>
+                                @if (Model.ShippingCost > 0)
+                                {
+                                    <tr>
+                                        <td><strong>Shipping:</strong></td>
+                                        <td class="text-right">@Model.ShippingCost.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</td>
+                                    </tr>
+                                }
+                                @if (Model.Tax > 0)
+                                {
+                                    <tr>
+                                        <td><strong>Tax:</strong></td>
+                                        <td class="text-right">@Model.Tax.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</td>
+                                    </tr>
+                                }
+                                @if (Model.Discount > 0)
+                                {
+                                    <tr>
+                                        <td><strong>Discount:</strong></td>
+                                        <td class="text-right text-danger">-@Model.Discount.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</td>
+                                    </tr>
+                                }
+                                <tr class="table-active">
+                                    <td><strong>Total:</strong></td>
+                                    <td class="text-right font-weight-bold text-success">@Model.Total.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Order Meta -->
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Order Details</h5>
+            <!-- Quick Actions -->
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-bolt mr-2"></i>Quick Actions
+                    </h6>
                 </div>
                 <div class="card-body">
-                    <dl class="row mb-0">
-                        <dt class="col-sm-6">Order Date:</dt>
-                        <dd class="col-sm-6">@Model.OrderDate.ToString("MMM dd, yyyy HH:mm")</dd>
-
-                        <dt class="col-sm-6">Payment Method:</dt>
-                        <dd class="col-sm-6">@Model.PaymentMethod</dd>
-
-                        @if (!string.IsNullOrEmpty(Model.Priority))
-                        {
-                            <dt class="col-sm-6">Priority:</dt>
-                            <dd class="col-sm-6">
-                                <span class="badge badge-@(Model.Priority == "High" ? "danger" :
-                                                                                               Model.Priority == "Urgent" ? "dark" : "secondary")">
-                                @Model.Priority
-                            </span>
-                        </dd>
-                                                }
-
-                        @if (!string.IsNullOrEmpty(Model.AssignedTo))
-                        {
-                            <dt class="col-sm-6">Assigned To:</dt>
-                            <dd class="col-sm-6">@Model.AssignedTo</dd>
-                        }
-
-                        @if (Model.EstimatedDelivery.HasValue)
-                        {
-                            <dt class="col-sm-6">Est. Delivery:</dt>
-                            <dd class="col-sm-6">@Model.EstimatedDelivery.Value.ToString("MMM dd, yyyy")</dd>
-                        }
-
-                        @if (Model.ActualDelivery.HasValue)
-                        {
-                            <dt class="col-sm-6">Actual Delivery:</dt>
-                            <dd class="col-sm-6">@Model.ActualDelivery.Value.ToString("MMM dd, yyyy HH:mm")</dd>
-                        }
-                    </dl>
-
-                    @if (!string.IsNullOrEmpty(Model.AdminNotes))
-                    {
-                        <hr>
-                        <h6>Admin Notes</h6>
-                        <p class="text-muted mb-0">@Model.AdminNotes</p>
-                    }
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <form method="post" asp-action="Edit" asp-route-id="@Model.OrderId">
+                                <input type="hidden" name="actionType" value="mark-processing">
+                                <button type="submit" class="btn btn-info btn-block" @(Model.OrderStatus == "Processing" ? "disabled" : "")>
+                                    <i class="fas fa-cogs"></i> Processing
+                                </button>
+                            </form>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <form method="post" asp-action="Edit" asp-route-id="@Model.OrderId">
+                                <input type="hidden" name="actionType" value="mark-shipped">
+                                <button type="submit" class="btn btn-primary btn-block" @(Model.OrderStatus == "Shipped" ? "disabled" : "")>
+                                    <i class="fas fa-shipping-fast"></i> Shipped
+                                </button>
+                            </form>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <form method="post" asp-action="Edit" asp-route-id="@Model.OrderId">
+                                <input type="hidden" name="actionType" value="mark-delivered">
+                                <button type="submit" class="btn btn-success btn-block" @(Model.OrderStatus == "Delivered" ? "disabled" : "")>
+                                    <i class="fas fa-truck"></i> Delivered
+                                </button>
+                            </form>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <form method="post" asp-action="Edit" asp-route-id="@Model.OrderId">
+                                <input type="hidden" name="actionType" value="mark-paid">
+                                <button type="submit" class="btn btn-success btn-block" @(Model.PaymentStatus == "Paid" ? "disabled" : "")>
+                                    <i class="fas fa-check-circle"></i> Paid
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-    .timeline {
-        position: relative;
-        padding-left: 30px;
-    }
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Confirm quick actions
+            $('form[action*="Edit"]').on('submit', function(e) {
+                const actionType = $(this).find('input[name="actionType"]').val();
+                const orderId = @Model.OrderId;
 
-    .timeline-item {
-        position: relative;
-        margin-bottom: 20px;
-    }
-
-    .timeline-marker {
-        position: absolute;
-        left: -30px;
-        top: 0;
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background-color: #4e73df;
-        border: 2px solid white;
-        box-shadow: 0 0 0 3px #4e73df;
-    }
-
-    .timeline-content {
-        padding-bottom: 10px;
-        border-bottom: 1px solid #e3e6f0;
-    }
-
-    .timeline-item:last-child .timeline-content {
-        border-bottom: none;
-    }
-
-    .badge-lg {
-        font-size: 0.9rem;
-        padding: 0.35rem 0.65rem;
-    }
-</style>
+                if (actionType) {
+                    const actionText = actionType.replace('mark-', '').replace('-', ' ');
+                    if (!confirm(`Are you sure you want to mark order #${orderId} as ${actionText}?`)) {
+                        e.preventDefault();
+                        return false;
+                    }
+                }
+                return true;
+            });
+        });
+    </script>
+}
 
 @functions {
     private string GetStatusBadgeColor(string status)
@@ -445,6 +398,41 @@
             "Failed" => "danger",
             "Refunded" => "info",
             "Partially Refunded" => "info",
+            _ => "secondary"
+        };
+    }
+
+    private string GetPriorityBadgeColor(string priority)
+    {
+        return priority switch
+        {
+            "Low" => "secondary",
+            "Normal" => "info",
+            "High" => "warning",
+            "Urgent" => "danger",
+            _ => "secondary"
+        };
+    }
+
+    private string GetStatusColor(string status)
+    {
+        return status switch
+        {
+            "Pending" => "warning",
+            "Processing" => "info",
+            "Shipped" => "primary",
+            "Delivered" => "success",
+            _ => "secondary"
+        };
+    }
+
+    private string GetPaymentColor(string paymentStatus)
+    {
+        return paymentStatus switch
+        {
+            "Paid" => "success",
+            "Pending" => "warning",
+            "Failed" => "danger",
             _ => "secondary"
         };
     }

@@ -1,0 +1,277 @@
+﻿@{
+    ViewData["Title"] = "Order Dashboard";
+    ViewData["ActivePage"] = "Dashboard";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2">Order Dashboard</h1>
+        <div class="btn-group">
+            <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                <i class="fas fa-shopping-cart"></i> View Orders
+            </a>
+            <a href="@Url.Action("Export")" class="btn btn-outline-secondary">
+                <i class="fas fa-download"></i> Export Data
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Row -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Monthly Revenue
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.MonthlyRevenue.ToString("C")</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Monthly Orders
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.MonthlyOrders</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Avg. Order Value
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.MonthlyAverage.ToString("C")</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Yearly Revenue
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.YearlyRevenue.ToString("C")</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Recent Orders -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Orders</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (ViewBag.RecentOrders != null)
+                                {
+                                    foreach (var order in ViewBag.RecentOrders as List<MyShop.Models.Checkout>)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <a href="@Url.Action("Details", new { id = order.OrderId })">
+                                                    #@order.OrderId
+                                                </a>
+                                            </td>
+                                            <td>@order.FirstName @order.LastName</td>
+                                            <td>@order.OrderDate.ToString("MMM dd")</td>
+                                            <td>@order.Total.ToString("C")</td>
+                                            <td>
+                                                <span class="badge badge-@GetStatusBadgeColor(order.OrderStatus)">
+                                                    @order.OrderStatus
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Distribution -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Order Status Distribution</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        @if (ViewBag.StatusDistribution != null)
+                        {
+                            foreach (var item in ViewBag.StatusDistribution as dynamic)
+                            {
+                                <div class="col-md-3 col-sm-6 mb-3">
+                                    <div class="card border-left-@GetStatusColor(item.Status) shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col mr-2">
+                                                    <div class="text-xs font-weight-bold text-@GetStatusColor(item.Status) text-uppercase mb-1">
+                                                        @item.Status
+                                                    </div>
+                                                    <div class="h5 mb-0 font-weight-bold text-gray-800">@item.Count</div>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Products -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Top Products</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th class="text-right">Sold</th>
+                                    <th class="text-right">Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (ViewBag.TopProducts != null)
+                                {
+                                    foreach (var product in ViewBag.TopProducts as dynamic)
+                                    {
+                                        <tr>
+                                            <td>@product.ProductName</td>
+                                            <td class="text-right">@product.TotalSold</td>
+                                            <td class="text-right font-weight-bold">@product.Revenue.ToString("C")</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Quick Statistics</h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <div class="mb-4">
+                            <h4 class="font-weight-bold text-gray-800">@ViewBag.YearlyOrders</h4>
+                            <span class="text-muted">Total Orders This Year</span>
+                        </div>
+                        <div class="mb-4">
+                            <h4 class="font-weight-bold text-success">@ViewBag.YearlyRevenue.ToString("C")</h4>
+                            <span class="text-muted">Yearly Revenue</span>
+                        </div>
+                        <div>
+                            <h4 class="font-weight-bold text-primary">@ViewBag.TodayOrders</h4>
+                            <span class="text-muted">Orders Today</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Refresh statistics every 60 seconds
+            setInterval(function() {
+                $.get('@Url.Action("GetStatistics", "OrderManager")', { period: 'today' }, function(data) {
+                    // Update statistics cards if needed
+                });
+            }, 60000);
+        });
+    </script>
+}
+
+@functions {
+    private string GetStatusBadgeColor(string status)
+    {
+        return status switch
+        {
+            "Pending" => "warning",
+            "Processing" => "info",
+            "Shipped" => "primary",
+            "Delivered" => "success",
+            "Cancelled" => "danger",
+            "Refunded" => "secondary",
+            "On Hold" => "dark",
+            _ => "secondary"
+        };
+    }
+
+    private string GetStatusColor(string status)
+    {
+        return status switch
+        {
+            "Pending" => "warning",
+            "Processing" => "info",
+            "Shipped" => "primary",
+            "Delivered" => "success",
+            "Cancelled" => "danger",
+            _ => "secondary"
+        };
+    }
+}

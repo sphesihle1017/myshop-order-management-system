@@ -49,6 +49,30 @@
                             <span asp-validation-for="Description" class="text-danger small"></span>
                         </div>
 
+                        <!-- Size -->
+                        <div class="form-group mb-3">
+                            <label asp-for="Size" class="form-label fw-bold">Size</label>
+                            <input asp-for="Size" class="form-control"
+                                   list="sizeOptions"
+                                   placeholder="e.g., S, M, L, XL, 500ml, 1kg, etc." />
+                            <datalist id="sizeOptions">
+                                @Html.Raw(@"
+                                                                < option value = 'XS' >
+                                                                < option value = 'S' >
+                                                                < option value = 'M' >
+                                                                < option value = 'L' >
+                                                                < option value = 'XL' >
+                                                                < option value = 'XXL' >
+                                                                < option value = 'XXXL' >
+
+                                                                ")
+                            </datalist>
+                            <span asp-validation-for="Size" class="text-danger small"></span>
+                            <small class="form-text text-muted">
+                                Optional: Enter size information (clothing sizes, volume, weight, etc.)
+                            </small>
+                        </div>
+
                         <!-- Category and Image -->
                         <div class="row">
                             <div class="col-md-6">

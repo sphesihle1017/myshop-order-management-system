@@ -1,0 +1,616 @@
+﻿@model MyShop.Models.Checkout
+
+@{
+    ViewData["Title"] = "Edit Order";
+    ViewData["ActivePage"] = "Orders";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2">Edit Order #@Model.OrderId</h1>
+        <div class="btn-group">
+            <a href="@Url.Action("Details", new { id = Model.OrderId })" class="btn btn-outline-info">
+                <i class="fas fa-eye"></i> View Details
+            </a>
+            <a href="@Url.Action("Print", new { id = Model.OrderId })" class="btn btn-outline-secondary" target="_blank">
+                <i class="fas fa-print"></i> Print
+            </a>
+            <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Orders
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Status Update Cards -->
+    <div class="row mb-4">
+        @if (Model.OrderStatus != "Processing")
+        {
+            <div class="col-md-3 mb-3">
+                <div class="card border-left-info shadow h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-cogs fa-3x text-info mb-3"></i>
+                        <h5 class="card-title">Start Processing</h5>
+                        <form method="post" asp-action="Edit" asp-route-id="@Model.OrderId" class="d-inline">
+                            <input type="hidden" name="actionType" value="mark-processing">
+                            <button type="submit" class="btn btn-info btn-block">
+                                <i class="fas fa-play"></i> Mark as Processing
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (Model.OrderStatus != "Shipped")
+        {
+            <div class="col-md-3 mb-3">
+                <div class="card border-left-primary shadow h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-shipping-fast fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Mark as Shipped</h5>
+                        <form method="post" asp-action="Edit" asp-route-id="@Model.OrderId" class="d-inline">
+                            <input type="hidden" name="actionType" value="mark-shipped">
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-truck"></i> Ship Order
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (Model.OrderStatus != "Delivered")
+        {
+            <div class="col-md-3 mb-3">
+                <div class="card border-left-success shadow h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-truck fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">Mark as Delivered</h5>
+                        <form method="post" asp-action="Edit" asp-route-id="@Model.OrderId" class="d-inline">
+                            <input type="hidden" name="actionType" value="mark-delivered">
+                            <button type="submit" class="btn btn-success btn-block">
+                                <i class="fas fa-check-circle"></i> Mark Delivered
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (Model.PaymentStatus != "Paid")
+        {
+            <div class="col-md-3 mb-3">
+                <div class="card border-left-success shadow h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">Mark as Paid</h5>
+                        <form method="post" asp-action="Edit" asp-route-id="@Model.OrderId" class="d-inline">
+                            <input type="hidden" name="actionType" value="mark-paid">
+                            <button type="submit" class="btn btn-success btn-block">
+                                <i class="fas fa-dollar-sign"></i> Mark Paid
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Order Information -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Order Information</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="OrderId" />
+
+                        <!-- Status & Priority Section -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="OrderStatus" class="control-label font-weight-bold">Order Status</label>
+                                    <select asp-for="OrderStatus" class="form-control">
+                                        <option value="Pending">Pending</option>
+                                        <option value="Processing">Processing</option>
+                                        <option value="Shipped">Shipped</option>
+                                        <option value="Delivered">Delivered</option>
+                                        <option value="Cancelled">Cancelled</option>
+                                        <option value="Refunded">Refunded</option>
+                                        <option value="On Hold">On Hold</option>
+                                    </select>
+                                    <span asp-validation-for="OrderStatus" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="PaymentStatus" class="control-label font-weight-bold">Payment Status</label>
+                                    <select asp-for="PaymentStatus" class="form-control">
+                                        <option value="Pending">Pending</option>
+                                        <option value="Paid">Paid</option>
+                                        <option value="Failed">Failed</option>
+                                        <option value="Refunded">Refunded</option>
+                                        <option value="Partially Refunded">Partially Refunded</option>
+                                    </select>
+                                    <span asp-validation-for="PaymentStatus" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Priority & Assignment -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Priority" class="control-label font-weight-bold">Priority</label>
+                                    <select asp-for="Priority" class="form-control">
+                                        <option value="Low">Low</option>
+                                        <option value="Normal">Normal</option>
+                                        <option value="High">High</option>
+                                        <option value="Urgent">Urgent</option>
+                                    </select>
+                                    <span asp-validation-for="Priority" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="AssignedTo" class="control-label font-weight-bold">Assigned To</label>
+                                    <input asp-for="AssignedTo" class="form-control" placeholder="Enter staff name" />
+                                    <span asp-validation-for="AssignedTo" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Shipping Information -->
+                        <h5 class="mb-3 font-weight-bold text-gray-800">Shipping Information</h5>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="TrackingNumber" class="control-label font-weight-bold">Tracking Number</label>
+                                    <input asp-for="TrackingNumber" class="form-control" />
+                                    <span asp-validation-for="TrackingNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="ShippingCarrier" class="control-label font-weight-bold">Shipping Carrier</label>
+                                    <select asp-for="ShippingCarrier" class="form-control">
+                                        <option value="">Select Carrier</option>
+                                        <option value="The Courier Guy">The Courier Guy</option>
+                                        <option value="Fastway">Fastway</option>
+                                        <option value="DHL">DHL</option>
+                                        <option value="FedEx">FedEx</option>
+                                        <option value="UPS">UPS</option>
+                                        <option value="PostNet">PostNet</option>
+                                        <option value="Pargo">Pargo</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <span asp-validation-for="ShippingCarrier" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="ShippingService" class="control-label font-weight-bold">Shipping Service</label>
+                                    <input asp-for="ShippingService" class="form-control" placeholder="e.g., Express, Standard" />
+                                    <span asp-validation-for="ShippingService" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="ShippingCost" class="control-label font-weight-bold">Shipping Cost</label>
+                                    <input asp-for="ShippingCost" class="form-control" type="number" step="0.01" />
+                                    <span asp-validation-for="ShippingCost" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Delivery Dates -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="EstimatedDelivery" class="control-label font-weight-bold">Estimated Delivery</label>
+                                    <input asp-for="EstimatedDelivery" class="form-control" type="datetime-local" />
+                                    <span asp-validation-for="EstimatedDelivery" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="ActualDelivery" class="control-label font-weight-bold">Actual Delivery</label>
+                                    <input asp-for="ActualDelivery" class="form-control" type="datetime-local" />
+                                    <span asp-validation-for="ActualDelivery" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notes Section -->
+                        <h5 class="mb-3 font-weight-bold text-gray-800">Notes & References</h5>
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label asp-for="AdminNotes" class="control-label font-weight-bold">Admin Notes</label>
+                                    <textarea asp-for="AdminNotes" class="form-control" rows="4" placeholder="Add internal notes here..."></textarea>
+                                    <span asp-validation-for="AdminNotes" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="InternalReference" class="control-label font-weight-bold">Internal Reference</label>
+                                    <input asp-for="InternalReference" class="form-control" placeholder="Internal reference number" />
+                                    <span asp-validation-for="InternalReference" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Discount" class="control-label font-weight-bold">Discount Applied</label>
+                                    <input asp-for="Discount" class="form-control" type="number" step="0.01" />
+                                    <span asp-validation-for="Discount" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                            <a href="@Url.Action("Details", new { id = Model.OrderId })" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+
+                            <!-- Quick Action Buttons -->
+                            <div class="btn-group ml-2">
+                                <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                                    <i class="fas fa-bolt"></i> Quick Actions
+                                </button>
+                                <div class="dropdown-menu">
+                                    @if (Model.OrderStatus != "Processing")
+                                    {
+                                        <form method="post" style="display: inline;">
+                                            <input type="hidden" name="actionType" value="mark-processing">
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="fas fa-cogs text-info"></i> Mark as Processing
+                                            </button>
+                                        </form>
+                                    }
+                                    @if (Model.OrderStatus != "Shipped")
+                                    {
+                                        <form method="post" style="display: inline;">
+                                            <input type="hidden" name="actionType" value="mark-shipped">
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="fas fa-shipping-fast text-primary"></i> Mark as Shipped
+                                            </button>
+                                        </form>
+                                    }
+                                    @if (Model.OrderStatus != "Delivered")
+                                    {
+                                        <form method="post" style="display: inline;">
+                                            <input type="hidden" name="actionType" value="mark-delivered">
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="fas fa-truck text-success"></i> Mark as Delivered
+                                            </button>
+                                        </form>
+                                    }
+                                    @if (Model.PaymentStatus != "Paid")
+                                    {
+                                        <form method="post" style="display: inline;">
+                                            <input type="hidden" name="actionType" value="mark-paid">
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="fas fa-check-circle text-success"></i> Mark as Paid
+                                            </button>
+                                        </form>
+                                    }
+                                    <div class="dropdown-divider"></div>
+                                    @if (!string.IsNullOrEmpty(Model.TrackingNumber))
+                                    {
+                                        <form method="post" style="display: inline;">
+                                            <input type="hidden" name="actionType" value="send-tracking">
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="fas fa-envelope text-warning"></i> Send Tracking Email
+                                            </button>
+                                        </form>
+                                    }
+                                    <form method="post" style="display: inline;">
+                                        <input type="hidden" name="actionType" value="generate-invoice">
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="fas fa-file-invoice-dollar text-primary"></i> Generate Invoice
+                                        </button>
+                                    </form>
+                                    @if (Model.Priority != "High")
+                                    {
+                                        <form method="post" style="display: inline;">
+                                            <input type="hidden" name="actionType" value="set-high-priority">
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="fas fa-exclamation-triangle text-danger"></i> Set High Priority
+                                            </button>
+                                        </form>
+                                    }
+                                    @if (Model.OrderStatus != "On Hold")
+                                    {
+                                        <form method="post" style="display: inline;">
+                                            <input type="hidden" name="actionType" value="put-on-hold">
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="fas fa-pause text-warning"></i> Put on Hold
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary Sidebar -->
+        <div class="col-lg-4">
+            <!-- Order Summary Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Order Summary</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Order Date:</strong><br>
+                        @Model.OrderDate.ToString("MMMM dd, yyyy HH:mm")
+                    </div>
+
+                    <div class="mb-3">
+                        <strong>Current Status:</strong><br>
+                        <span class="badge badge-@GetStatusBadgeColor(Model.OrderStatus)">
+                            @Model.OrderStatus
+                        </span>
+                    </div>
+
+                    <div class="mb-3">
+                        <strong>Payment Status:</strong><br>
+                        <span class="badge badge-@GetPaymentBadgeColor(Model.PaymentStatus)">
+                            @Model.PaymentStatus
+                        </span>
+                    </div>
+
+                    <div class="mb-3">
+                        <strong>Customer:</strong><br>
+                        @Model.FirstName @Model.LastName<br>
+                        <small class="text-muted">@Model.Email</small><br>
+                        <small class="text-muted">@Model.Phone</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <strong>Shipping Address:</strong><br>
+                        @Model.Address<br>
+                        @Model.City, @Model.PostalCode<br>
+                        @Model.Country
+                    </div>
+
+                    <div class="mb-3">
+                        <strong>Order Total:</strong><br>
+                        <h4 class="font-weight-bold text-success">@Model.Total.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Items Card -->
+            @if (Model.OrderItems != null && Model.OrderItems.Any())
+            {
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Order Items</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Qty</th>
+                                        <th>Price</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.OrderItems)
+                                    {
+                                        <tr>
+                                            <td>@item.ProductName</td>
+                                            <td>@item.Quantity</td>
+                                            <td>@item.Price.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</td>
+                                            <td>@item.Total.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="3" class="text-right"><strong>Subtotal:</strong></td>
+                                        <td><strong>@Model.Subtotal.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</strong></td>
+                                    </tr>
+                                    @if (Model.ShippingCost > 0)
+                                    {
+                                        <tr>
+                                            <td colspan="3" class="text-right"><strong>Shipping:</strong></td>
+                                            <td><strong>@Model.ShippingCost.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</strong></td>
+                                        </tr>
+                                    }
+                                    @if (Model.Tax > 0)
+                                    {
+                                        <tr>
+                                            <td colspan="3" class="text-right"><strong>Tax:</strong></td>
+                                            <td><strong>@Model.Tax.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</strong></td>
+                                        </tr>
+                                    }
+                                    @if (Model.Discount > 0)
+                                    {
+                                        <tr>
+                                            <td colspan="3" class="text-right"><strong>Discount:</strong></td>
+                                            <td><strong>-@Model.Discount.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</strong></td>
+                                        </tr>
+                                    }
+                                    <tr class="table-active">
+                                        <td colspan="3" class="text-right"><strong>Total:</strong></td>
+                                        <td><strong class="text-success">@Model.Total.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Action History Card -->
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success"></div>
+                            <div class="timeline-content">
+                                <h6 class="font-weight-bold">Order Created</h6>
+                                <p class="text-muted small">@Model.OrderDate.ToString("MMM dd, yyyy HH:mm")</p>
+                            </div>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.TrackingNumber))
+                        {
+                            <div class="timeline-item">
+                                <div class="timeline-marker bg-info"></div>
+                                <div class="timeline-content">
+                                    <h6 class="font-weight-bold">Tracking Added</h6>
+                                    <p class="text-muted small">Tracking: @Model.TrackingNumber</p>
+                                </div>
+                            </div>
+                        }
+                        @if (Model.ActualDelivery.HasValue)
+                        {
+                            <div class="timeline-item">
+                                <div class="timeline-marker bg-success"></div>
+                                <div class="timeline-content">
+                                    <h6 class="font-weight-bold">Delivered</h6>
+                                    <p class="text-muted small">@Model.ActualDelivery.Value.ToString("MMM dd, yyyy HH:mm")</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Set current values for dropdowns
+        $(document).ready(function() {
+            // Set selected status
+            $('#OrderStatus option[value="@Model.OrderStatus"]').prop('selected', true);
+
+            // Set selected payment status
+            $('#PaymentStatus option[value="@Model.PaymentStatus"]').prop('selected', true);
+
+            // Set selected priority
+            $('#Priority option[value="@Model.Priority"]').prop('selected', true);
+
+            // Set selected carrier
+            $('#ShippingCarrier option[value="@Model.ShippingCarrier"]').prop('selected', true);
+
+            // Format datetime values for input fields
+            function formatDateTimeForInput(dateTime) {
+                if (!dateTime) return '';
+                const d = new Date(dateTime);
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                const hours = String(d.getHours()).padStart(2, '0');
+                const minutes = String(d.getMinutes()).padStart(2, '0');
+                return `${year}-${month}-${day}T${hours}:${minutes}`;
+            }
+
+            // Set estimated delivery
+            const estimatedDelivery = '@Model.EstimatedDelivery';
+            if (estimatedDelivery) {
+                $('#EstimatedDelivery').val(formatDateTimeForInput(estimatedDelivery));
+            }
+
+            // Set actual delivery
+            const actualDelivery = '@Model.ActualDelivery';
+            if (actualDelivery) {
+                $('#ActualDelivery').val(formatDateTimeForInput(actualDelivery));
+            }
+
+            // Quick action confirmation
+            $('form[action*="Edit"]').on('submit', function(e) {
+                const actionType = $(this).find('input[name="actionType"]').val();
+                const orderId = @Model.OrderId;
+
+                if (actionType && actionType !== 'save') {
+                    const actionText = actionType.replace('mark-', '').replace('-', ' ').replace('set-', '').replace('put-', '');
+                    if (!confirm(`Are you sure you want to ${actionText} order #${orderId}?`)) {
+                        e.preventDefault();
+                        return false;
+                    }
+                }
+                return true;
+            });
+
+            // Auto-generate tracking number if shipped
+            $('#OrderStatus').change(function() {
+                if ($(this).val() === 'Shipped' && !$('#TrackingNumber').val()) {
+                    if (confirm('Do you want to generate a tracking number for this shipment?')) {
+                        const trackingNumber = 'TRK' + new Date().getTime() + Math.floor(Math.random() * 1000);
+                        $('#TrackingNumber').val(trackingNumber);
+                    }
+                }
+            });
+
+            // Auto-set delivery date if marked as delivered
+            $('#OrderStatus').change(function() {
+                if ($(this).val() === 'Delivered' && !$('#ActualDelivery').val()) {
+                    const now = new Date();
+                    const formattedNow = formatDateTimeForInput(now);
+                    $('#ActualDelivery').val(formattedNow);
+                }
+            });
+        });
+    </script>
+}
+
+@functions {
+    private string GetStatusBadgeColor(string status)
+    {
+        return status switch
+        {
+            "Pending" => "warning",
+            "Processing" => "info",
+            "Shipped" => "primary",
+            "Delivered" => "success",
+            "Cancelled" => "danger",
+            "Refunded" => "secondary",
+            "On Hold" => "dark",
+            _ => "secondary"
+        };
+    }
+
+    private string GetPaymentBadgeColor(string paymentStatus)
+    {
+        return paymentStatus switch
+        {
+            "Paid" => "success",
+            "Pending" => "warning",
+            "Failed" => "danger",
+            "Refunded" => "info",
+            "Partially Refunded" => "info",
+            _ => "secondary"
+        };
+    }
+}

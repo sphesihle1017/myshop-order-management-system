@@ -48,6 +48,12 @@
                                 <dt class="col-sm-4">Category:</dt>
                                 <dd class="col-sm-8">@Model.Category?.CategoryName</dd>
 
+                                @if (!string.IsNullOrEmpty(Model.Size))
+                                {
+                                    <dt class="col-sm-4">Size:</dt>
+                                    <dd class="col-sm-8">@Model.Size</dd>
+                                }
+
                                 <dt class="col-sm-4">Stock:</dt>
                                 <dd class="col-sm-8">
                                     <span class="badge bg-@Model.StockStatusColor">@Model.StockQuantity units</span>

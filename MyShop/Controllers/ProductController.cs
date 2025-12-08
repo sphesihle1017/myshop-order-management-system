@@ -136,9 +136,11 @@ namespace ONT3001EFExample.Controllers
                 }
 
                 // Update properties
+               
                 existingProduct.Name = product.Name;
                 existingProduct.Price = product.Price;
                 existingProduct.Description = product.Description;
+                existingProduct.Size = product.Size; // Add this line
                 existingProduct.CategoryId = product.CategoryId;
                 existingProduct.StockQuantity = product.StockQuantity;
                 existingProduct.LowStockThreshold = product.LowStockThreshold;
@@ -372,6 +374,22 @@ namespace ONT3001EFExample.Controllers
             if (System.IO.File.Exists(imagePath))
             {
                 System.IO.File.Delete(imagePath);
+            }
+        }
+
+        public static class ProductSizes
+        {
+            public static readonly Dictionary<string, string[]> SizeCategories = new()
+            {
+                { "Clothing", new[] { "XS", "S", "M", "L", "XL", "XXL", "XXXL" } },
+                { "Shoes", new[] { "5", "6", "7", "8", "9", "10", "11", "12" } },
+                { "Bottles", new[] { "250ml", "500ml", "750ml", "1L", "1.5L", "2L" } },
+                { "Weight", new[] { "50g", "100g", "250g", "500g", "1kg", "2kg", "5kg" } }
+            };
+
+            public static List<string> GetAllSizes()
+            {
+                return SizeCategories.Values.SelectMany(x => x).ToList();
             }
         }
     }

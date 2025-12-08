@@ -6,12 +6,21 @@
 }
 
 <div class="container-fluid">
+    <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h2">Order Management</h1>
         <div class="btn-group">
-            <a href="@Url.Action("Export")" class="btn btn-outline-secondary">
+            <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown">
                 <i class="fas fa-download"></i> Export
-            </a>
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="@Url.Action("Export", new { format = "csv" })">
+                    <i class="fas fa-file-csv"></i> Export as CSV
+                </a>
+                <a class="dropdown-item" href="@Url.Action("Export", new { format = "excel" })">
+                    <i class="fas fa-file-excel"></i> Export as Excel
+                </a>
+            </div>
             <a href="@Url.Action("Dashboard")" class="btn btn-outline-info">
                 <i class="fas fa-chart-bar"></i> Dashboard
             </a>
@@ -20,7 +29,7 @@
 
     <!-- Statistics Cards -->
     <div class="row mb-4">
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -36,13 +45,15 @@
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
             <div class="card border-left-success shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Revenue</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalRevenue.ToString("C")</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @ViewBag.TotalRevenue.ToString("C", new System.Globalization.CultureInfo("en-ZA"))
+                            </div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -52,12 +63,12 @@
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
             <div class="card border-left-warning shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending Orders</div>
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.PendingOrders</div>
                         </div>
                         <div class="col-auto">
@@ -68,68 +79,184 @@
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
             <div class="card border-left-info shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Today's Orders</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TodayOrders</div>
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Processing</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.ProcessingOrders</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                            <i class="fas fa-cogs fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Shipped</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.ShippedOrders</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-shipping-fast fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Delivered</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.DeliveredOrders</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-truck fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
     <!-- Filters and Search -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Filters & Search</h6>
         </div>
         <div class="card-body">
-            <form method="get" class="form-inline">
+            <form method="get" class="form-inline" id="filterForm">
+                @Html.AntiForgeryToken()
                 <div class="input-group mb-2 mr-sm-2" style="width: 300px;">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    </div>
                     <input type="text" class="form-control" name="search" placeholder="Search orders..." value="@ViewBag.SearchTerm">
                 </div>
 
-                <select class="form-control mb-2 mr-sm-2" name="status">
+                <select class="form-control mb-2 mr-sm-2" name="status" id="statusFilter">
                     <option value="all" selected="@(ViewBag.CurrentStatus == "all")">All Statuses</option>
                     <option value="Pending" selected="@(ViewBag.CurrentStatus == "Pending")">Pending</option>
                     <option value="Processing" selected="@(ViewBag.CurrentStatus == "Processing")">Processing</option>
                     <option value="Shipped" selected="@(ViewBag.CurrentStatus == "Shipped")">Shipped</option>
                     <option value="Delivered" selected="@(ViewBag.CurrentStatus == "Delivered")">Delivered</option>
                     <option value="Cancelled" selected="@(ViewBag.CurrentStatus == "Cancelled")">Cancelled</option>
+                    <option value="On Hold" selected="@(ViewBag.CurrentStatus == "On Hold")">On Hold</option>
+                    <option value="Refunded" selected="@(ViewBag.CurrentStatus == "Refunded")">Refunded</option>
                 </select>
 
-                <select class="form-control mb-2 mr-sm-2" name="sort">
+                <select class="form-control mb-2 mr-sm-2" name="sort" id="sortFilter">
                     <option value="newest" selected="@(ViewBag.CurrentSort == "newest")">Newest First</option>
                     <option value="oldest" selected="@(ViewBag.CurrentSort == "oldest")">Oldest First</option>
                     <option value="price-high" selected="@(ViewBag.CurrentSort == "price-high")">Price: High to Low</option>
                     <option value="price-low" selected="@(ViewBag.CurrentSort == "price-low")">Price: Low to High</option>
                     <option value="name" selected="@(ViewBag.CurrentSort == "name")">Customer Name</option>
+                    <option value="total-high" selected="@(ViewBag.CurrentSort == "total-high")">Total: High to Low</option>
+                    <option value="total-low" selected="@(ViewBag.CurrentSort == "total-low")">Total: Low to High</option>
                 </select>
+
+                <div class="input-group mb-2 mr-sm-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                    </div>
+                    <input type="date" class="form-control" name="startDate" id="startDate" value="@Context.Request.Query["startDate"]">
+                    <input type="date" class="form-control" name="endDate" id="endDate" value="@Context.Request.Query["endDate"]">
+                </div>
 
                 <button type="submit" class="btn btn-primary mb-2">
                     <i class="fas fa-filter"></i> Apply Filters
                 </button>
-                <a href="@Url.Action("Index")" class="btn btn-secondary mb-2 ml-2">
+                <button type="button" class="btn btn-secondary mb-2 ml-2" id="clearFiltersBtn">
                     <i class="fas fa-times"></i> Clear
-                </a>
+                </button>
             </form>
         </div>
     </div>
+
+    <!-- Quick Action Buttons -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+            <div>
+                <button type="button" class="btn btn-outline-primary btn-sm" id="refreshBtn">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                <!-- Bulk Action Forms -->
+                <form method="post" asp-action="BulkAction" id="bulkProcessingForm" class="d-inline">
+                    <input type="hidden" name="action" value="mark-processing">
+                    <button type="submit" class="btn btn-info btn-sm" id="processSelectedBtn" disabled>
+                        <i class="fas fa-cogs"></i> Process Selected
+                    </button>
+                </form>
+
+                <form method="post" asp-action="BulkAction" id="bulkShippedForm" class="d-inline">
+                    <input type="hidden" name="action" value="mark-shipped">
+                    <button type="submit" class="btn btn-primary btn-sm" id="shipSelectedBtn" disabled>
+                        <i class="fas fa-shipping-fast"></i> Ship Selected
+                    </button>
+                </form>
+
+                <form method="post" asp-action="BulkAction" id="bulkDeliveredForm" class="d-inline">
+                    <input type="hidden" name="action" value="mark-delivered">
+                    <button type="submit" class="btn btn-success btn-sm" id="deliverSelectedBtn" disabled>
+                        <i class="fas fa-truck"></i> Deliver Selected
+                    </button>
+                </form>
+
+                <form method="post" asp-action="BulkAction" id="bulkPaidForm" class="d-inline">
+                    <input type="hidden" name="action" value="mark-paid">
+                    <button type="submit" class="btn btn-success btn-sm" id="paySelectedBtn" disabled>
+                        <i class="fas fa-check-circle"></i> Mark Paid
+                    </button>
+                </form>
+
+                <form method="post" asp-action="BulkAction" id="bulkAssignForm" class="d-inline">
+                    <input type="hidden" name="action" value="assign-me">
+                    <button type="submit" class="btn btn-warning btn-sm" id="assignSelectedBtn" disabled>
+                        <i class="fas fa-user-check"></i> Assign to Me
+                    </button>
+                </form>
+
+                <button type="button" class="btn btn-secondary btn-sm" id="exportSelectedBtn" disabled>
+                    <i class="fas fa-download"></i> Export Selected
+                </button>
+
+                <button type="button" class="btn btn-danger btn-sm" id="clearSelectionBtn" disabled>
+                    <i class="fas fa-times"></i> Clear Selection
+                </button>
+            </div>
+
+            <!-- Selection Counter -->
+            <div id="selectionCounter" class="d-none">
+                <span class="badge badge-primary" id="selectedCount">0</span> orders selected
+            </div>
+        </div>
+    </div>
+
+ 
 
     <!-- Orders Table -->
     <div class="card shadow">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
             <h6 class="m-0 font-weight-bold text-primary">Orders</h6>
-            <form method="post" asp-action="BulkAction" id="bulkActionForm" class="d-inline">
+            <div class="d-flex align-items-center">
+                <span class="mr-3 text-muted small" id="orderCount">
+                    Showing @Model.Count() orders
+                </span>
                 <div class="input-group" style="width: 300px;">
-                    <select name="action" class="form-control" id="bulkActionSelect">
+                    <select class="form-control" id="bulkActionSelect">
                         <option value="">Bulk Actions</option>
                         <option value="mark-processing">Mark as Processing</option>
                         <option value="mark-shipped">Mark as Shipped</option>
@@ -139,232 +266,573 @@
                         <option value="export-selected">Export Selected</option>
                     </select>
                     <div class="input-group-append">
-                        <button type="button" class="btn btn-outline-primary" onclick="applyBulkAction()">Apply</button>
+                        <button type="button" class="btn btn-outline-primary" id="applyBulkActionBtn" disabled>
+                            Apply
+                        </button>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover" id="ordersTable" width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th width="50">
-                                <input type="checkbox" id="selectAll">
-                            </th>
-                            <th>Order ID</th>
-                            <th>Date</th>
-                            <th>Customer</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                            <th>Payment</th>
-                            <th>Tracking</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var order in Model)
-                        {
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="ordersTable" width="100%" cellspacing="0">
+                        <thead>
                             <tr>
-                                <td>
-                                    <input type="checkbox" name="orderIds" value="@order.OrderId" class="order-checkbox">
-                                </td>
-                                <td>
-                                    <strong>#@order.OrderId</strong>
-                                    @if (!string.IsNullOrEmpty(order.InternalReference))
-                                    {
-                                        <br>
-                                        <small class="text-muted">Ref: @order.InternalReference</small>
-                                    }
-                                </td>
-                                <td>@order.OrderDate.ToString("MMM dd, yyyy HH:mm")</td>
-                                <td>
-                                    <strong>@order.FirstName @order.LastName</strong>
-                                    <br>
-                                    <small>@order.Email</small>
-                                    <br>
-                                    <small>@order.Phone</small>
-                                </td>
-                                <td>
-                                    <strong>@order.Total.ToString("C")</strong>
-                                    @if (order.ShippingCost > 0)
-                                    {
-                                        <br>
-                                        <small class="text-muted">Shipping: @order.ShippingCost.ToString("C")</small>
-                                    }
-                                </td>
-                                <td>
-                                    <span class="badge badge-@GetStatusBadgeColor(order.OrderStatus)">
-                                        @order.OrderStatus
-                                    </span>
-                                    @if (order.Priority == "High")
-                                    {
-                                        <br>
-                                        <span class="badge badge-danger">High Priority</span>
-                                    }
-                                    else if (order.Priority == "Urgent")
-                                    {
-                                        <br>
-                                        <span class="badge badge-dark">Urgent</span>
-                                    }
-                                </td>
-                                <td>
-                                    <span class="badge badge-@GetPaymentBadgeColor(order.PaymentStatus)">
-                                        @order.PaymentStatus
-                                    </span>
-                                </td>
-                                <td>
-                                    @if (!string.IsNullOrEmpty(order.TrackingNumber))
-                                    {
-                                        <a href="#" class="tracking-link" data-tracking="@order.TrackingNumber">
-                                            @order.TrackingNumber
-                                        </a>
-                                        @if (!string.IsNullOrEmpty(order.ShippingCarrier))
+                                <th width="50">
+                                    <input type="checkbox" id="selectAll">
+                                </th>
+                                <th>Order ID</th>
+                                <th>Date</th>
+                                <th>Customer</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Payment</th>
+                                <th>Tracking</th>
+                                <th width="250">Quick Actions</th>
+                                <th width="150">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model)
+                            {
+                                <tr data-order-id="@order.OrderId" data-status="@order.OrderStatus" data-payment="@order.PaymentStatus">
+                                    <td>
+                                        <input type="checkbox" name="orderIds" value="@order.OrderId" class="order-checkbox">
+                                    </td>
+                                    <td>
+                                        <strong>
+                                            <a href="@Url.Action("Details", new { id = order.OrderId })" class="text-primary">
+                                                #@order.OrderId
+                                            </a>
+                                        </strong>
+                                        @if (!string.IsNullOrEmpty(order.InternalReference))
                                         {
                                             <br>
-                                            <small>via @order.ShippingCarrier</small>
+                                            <small class="text-muted">Ref: @order.InternalReference</small>
                                         }
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted">No tracking</span>
-                                    }
-                                </td>
-                                <td>
-                                    <div class="btn-group btn-group-sm">
-                                        <a href="@Url.Action("Details", new { id = order.OrderId })"
-                                           class="btn btn-info" title="View Details">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="@Url.Action("Edit", new { id = order.OrderId })"
-                                           class="btn btn-primary" title="Edit Order">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <a href="@Url.Action("Print", new { id = order.OrderId })"
-                                           class="btn btn-secondary" title="Print Order" target="_blank">
-                                            <i class="fas fa-print"></i>
-                                        </a>
-                                        <button type="button" class="btn btn-success dropdown-toggle"
-                                                data-toggle="dropdown" title="Quick Actions">
-                                            <i class="fas fa-bolt"></i>
-                                        </button>
-                                        <div class="dropdown-menu">
+                                    </td>
+                                    <td>
+                                        <small>@order.OrderDate.ToString("MMM dd, yyyy")</small><br>
+                                        <small class="text-muted">@order.OrderDate.ToString("HH:mm")</small>
+                                    </td>
+                                    <td>
+                                        <strong>@order.FirstName @order.LastName</strong>
+                                        <br>
+                                        <small class="text-muted">@order.Email</small>
+                                        <br>
+                                        <small class="text-muted">@order.Phone</small>
+                                        @if (!string.IsNullOrEmpty(order.AssignedTo))
+                                        {
+                                            <br>
+                                            <small class="text-info">
+                                                <i class="fas fa-user"></i> @order.AssignedTo
+                                            </small>
+                                        }
+                                    </td>
+                                    <td>
+                                        <strong>@order.Total.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</strong>
+                                        @if (order.ShippingCost > 0)
+                                        {
+                                            <br>
+                                            <small class="text-muted">Shipping: @order.ShippingCost.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</small>
+                                        }
+                                        @if (order.Discount > 0)
+                                        {
+                                            <br>
+                                            <small class="text-success">Discount: @order.Discount.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</small>
+
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-@GetStatusBadgeColor(order.OrderStatus)">
+                                            @order.OrderStatus
+                                        </span>
+                                        @if (order.Priority == "High")
+                                        {
+                                            <br>
+                                            <span class="badge badge-danger">High Priority</span>
+                                        }
+                                        else if (order.Priority == "Urgent")
+                                        {
+                                            <br>
+                                            <span class="badge badge-dark">Urgent</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-@GetPaymentBadgeColor(order.PaymentStatus)">
+                                            @order.PaymentStatus
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(order.TrackingNumber))
+                                        {
+                                            <a href="#" class="tracking-link text-primary" data-tracking="@order.TrackingNumber" data-carrier="@order.ShippingCarrier">
+                                                @order.TrackingNumber
+                                            </a>
+                                            @if (!string.IsNullOrEmpty(order.ShippingCarrier))
+                                            {
+                                                <br>
+                                                <small class="text-muted">via @order.ShippingCarrier</small>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">No tracking</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            @if (order.OrderStatus == "Pending" || order.OrderStatus == "On Hold")
+                                            {
+                                                <form method="post" asp-action="Edit" asp-route-id="@order.OrderId" class="d-inline">
+                                                    <input type="hidden" name="actionType" value="mark-processing">
+                                                    <button type="submit" class="btn btn-info btn-sm" title="Start Processing">
+                                                        <i class="fas fa-cogs"></i> Process
+                                                    </button>
+                                                </form>
+                                            }
+                                            @if (order.OrderStatus == "Processing")
+                                            {
+                                                <form method="post" asp-action="Edit" asp-route-id="@order.OrderId" class="d-inline">
+                                                    <input type="hidden" name="actionType" value="mark-shipped">
+                                                    <button type="submit" class="btn btn-primary btn-sm" title="Mark as Shipped">
+                                                        <i class="fas fa-shipping-fast"></i> Ship
+                                                    </button>
+                                                </form>
+                                            }
+                                            @if (order.OrderStatus == "Shipped")
+                                            {
+                                                <form method="post" asp-action="Edit" asp-route-id="@order.OrderId" class="d-inline">
+                                                    <input type="hidden" name="actionType" value="mark-delivered">
+                                                    <button type="submit" class="btn btn-success btn-sm" title="Mark as Delivered">
+                                                        <i class="fas fa-truck"></i> Deliver
+                                                    </button>
+                                                </form>
+                                            }
                                             @if (order.PaymentStatus != "Paid")
                                             {
-                                                <form method="post" asp-action="Edit" asp-route-id="@order.OrderId"
-                                                      style="display: inline;">
+                                                <form method="post" asp-action="Edit" asp-route-id="@order.OrderId" class="d-inline">
                                                     <input type="hidden" name="actionType" value="mark-paid">
-                                                    <button type="submit" class="dropdown-item">
-                                                        <i class="fas fa-check-circle text-success"></i> Mark as Paid
+                                                    <button type="submit" class="btn btn-success btn-sm" title="Mark as Paid">
+                                                        <i class="fas fa-check-circle"></i> Paid
                                                     </button>
                                                 </form>
                                             }
-                                            @if (order.OrderStatus != "Shipped")
+                                            @if (order.Priority != "High" && order.OrderStatus != "Cancelled" && order.OrderStatus != "Delivered")
                                             {
-                                                <form method="post" asp-action="Edit" asp-route-id="@order.OrderId"
-                                                      style="display: inline;">
-                                                    <input type="hidden" name="actionType" value="mark-shipped">
-                                                    <button type="submit" class="dropdown-item">
-                                                        <i class="fas fa-shipping-fast text-info"></i> Mark as Shipped
+                                                <form method="post" asp-action="Edit" asp-route-id="@order.OrderId" class="d-inline">
+                                                    <input type="hidden" name="actionType" value="set-high-priority">
+                                                    <button type="submit" class="btn btn-warning btn-sm" title="Set High Priority">
+                                                        <i class="fas fa-exclamation"></i>
                                                     </button>
                                                 </form>
                                             }
-                                            @if (order.OrderStatus != "Delivered")
-                                            {
-                                                <form method="post" asp-action="Edit" asp-route-id="@order.OrderId"
-                                                      style="display: inline;">
-                                                    <input type="hidden" name="actionType" value="mark-delivered">
-                                                    <button type="submit" class="dropdown-item">
-                                                        <i class="fas fa-truck text-success"></i> Mark as Delivered
-                                                    </button>
-                                                </form>
-                                            }
-                                            @if (!string.IsNullOrEmpty(order.TrackingNumber))
-                                            {
-                                                <form method="post" asp-action="Edit" asp-route-id="@order.OrderId"
-                                                      style="display: inline;">
-                                                    <input type="hidden" name="actionType" value="send-tracking">
-                                                    <button type="submit" class="dropdown-item">
-                                                        <i class="fas fa-envelope text-warning"></i> Send Tracking
-                                                    </button>
-                                                </form>
-                                            }
-                                            <div class="dropdown-divider"></div>
-                                            <form method="post" asp-action="Edit" asp-route-id="@order.OrderId"
-                                                  style="display: inline;">
-                                                <input type="hidden" name="actionType" value="generate-invoice">
-                                                <button type="submit" class="dropdown-item">
-                                                    <i class="fas fa-file-invoice-dollar text-primary"></i> Generate Invoice
-                                                </button>
-                                            </form>
                                         </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="@Url.Action("Details", new { id = order.OrderId })"
+                                               class="btn btn-info" title="View Details" data-toggle="tooltip">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="@Url.Action("Edit", new { id = order.OrderId })"
+                                               class="btn btn-primary" title="Edit Order" data-toggle="tooltip">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-secondary dropdown-toggle"
+                                                    data-toggle="dropdown" title="More Actions">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <a href="@Url.Action("Print", new { id = order.OrderId })"
+                                                   class="dropdown-item" target="_blank">
+                                                    <i class="fas fa-print text-secondary"></i> Print Order
+                                                </a>
+                                                @if (!string.IsNullOrEmpty(order.TrackingNumber))
+                                                {
+                                                    <form method="post" asp-action="Edit" asp-route-id="@order.OrderId"
+                                                          style="display: inline;">
+                                                        <input type="hidden" name="actionType" value="send-tracking">
+                                                        <button type="submit" class="dropdown-item">
+                                                            <i class="fas fa-envelope text-warning"></i> Send Tracking
+                                                        </button>
+                                                    </form>
+                                                }
+                                                <form method="post" asp-action="Edit" asp-route-id="@order.OrderId"
+                                                      style="display: inline;">
+                                                    <input type="hidden" name="actionType" value="generate-invoice">
+                                                    <button type="submit" class="dropdown-item">
+                                                        <i class="fas fa-file-invoice-dollar text-primary"></i> Generate Invoice
+                                                    </button>
+                                                </form>
+                                                @if (order.OrderStatus != "On Hold")
+                                                {
+                                                    <form method="post" asp-action="Edit" asp-route-id="@order.OrderId"
+                                                          style="display: inline;">
+                                                        <input type="hidden" name="actionType" value="put-on-hold">
+                                                        <button type="submit" class="dropdown-item">
+                                                            <i class="fas fa-pause text-warning"></i> Put on Hold
+                                                        </button>
+                                                    </form>
+                                                }
+                                                <div class="dropdown-divider"></div>
+                                                <a href="@Url.Action("Delete", new { id = order.OrderId })"
+                                                   class="dropdown-item text-danger">
+                                                    <i class="fas fa-trash-alt"></i> Delete Order
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
 
-            @if (!Model.Any())
+                <!-- Pagination -->
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <div>
+                        <span class="text-muted">
+                            Showing <strong>@Model.Count()</strong> of <strong>@ViewBag.TotalOrders</strong> orders
+                        </span>
+                    </div>
+                    <nav>
+                        <ul class="pagination mb-0">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">Previous</a>
+                            </li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            }
+            else
             {
                 <div class="text-center py-5">
                     <i class="fas fa-shopping-cart fa-4x text-muted mb-3"></i>
                     <h4>No orders found</h4>
                     <p class="text-muted">Try adjusting your filters or search criteria</p>
+                    <a href="@Url.Action("Index")" class="btn btn-primary">
+                        <i class="fas fa-times"></i> Clear Filters
+                    </a>
                 </div>
             }
         </div>
     </div>
 </div>
 
+<!-- Tracking Modal -->
+<div class="modal fade" id="trackingModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tracking Information</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Tracking Number:</strong> <span id="trackingNumber"></span></p>
+                <p><strong>Carrier:</strong> <span id="trackingCarrier"></span></p>
+                <div class="form-group">
+                    <label for="trackingUrl">Tracking URL:</label>
+                    <input type="text" class="form-control" id="trackingUrl" readonly>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="openTrackingBtn">
+                    <i class="fas fa-external-link-alt"></i> Open Tracking
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
-        // Select all checkboxes
-        $('#selectAll').change(function() {
-            $('.order-checkbox').prop('checked', this.checked);
-        });
+        $(document).ready(function() {
+            // Initialize tooltips
+            $('[data-toggle="tooltip"]').tooltip();
 
-        // Bulk action handler
-        function applyBulkAction() {
-            const selectedOrders = $('.order-checkbox:checked');
-            const action = $('#bulkActionSelect').val();
-
-            if (selectedOrders.length === 0) {
-                alert('Please select at least one order');
-                return;
-            }
-
-            if (!action) {
-                alert('Please select an action');
-                return;
-            }
-
-            if (action === 'export-selected') {
-                exportSelectedOrders(selectedOrders);
-                return;
-            }
-
-            // Add selected order IDs to form
-            const form = $('#bulkActionForm');
-            selectedOrders.each(function() {
-                form.append(`<input type="hidden" name="orderIds" value="${this.value}">`);
+            // Select all checkboxes
+            $('#selectAll').change(function() {
+                const isChecked = this.checked;
+                $('.order-checkbox').prop('checked', isChecked);
+                updateSelectionState();
             });
 
-            form.submit();
-        }
+            // Update selection state when individual checkboxes change
+            $('.order-checkbox').change(function() {
+                updateSelectionState();
+            });
 
-        function exportSelectedOrders(selectedOrders) {
-            const orderIds = Array.from(selectedOrders).map(cb => cb.value);
-            const url = '@Url.Action("Export")' + '?format=csv&orderIds=' + orderIds.join(',');
-            window.open(url, '_blank');
-        }
+            // Update selection counter and button states
+            function updateSelectionState() {
+                const selectedOrders = $('.order-checkbox:checked');
+                const selectedCount = selectedOrders.length;
+                const isAnySelected = selectedCount > 0;
+                const isAllSelected = selectedCount === $('.order-checkbox').length;
 
-        // Tracking link handler
-        $(document).on('click', '.tracking-link', function(e) {
-            e.preventDefault();
-            const trackingNumber = $(this).data('tracking');
-            alert('Tracking number: ' + trackingNumber + '\n\nIn a real app, this would link to the carrier\'s tracking page.');
+                // Update select all checkbox
+                $('#selectAll').prop('checked', isAllSelected);
+
+                // Update counter
+                if (isAnySelected) {
+                    $('#selectionCounter').removeClass('d-none');
+                    $('#selectedCount').text(selectedCount);
+                } else {
+                    $('#selectionCounter').addClass('d-none');
+                }
+
+                // Enable/disable buttons
+                const buttons = [
+                    '#processSelectedBtn', '#shipSelectedBtn', '#deliverSelectedBtn',
+                    '#paySelectedBtn', '#assignSelectedBtn', '#exportSelectedBtn',
+                    '#clearSelectionBtn', '#applyBulkActionBtn'
+                ];
+
+                buttons.forEach(btn => {
+                    $(btn).prop('disabled', !isAnySelected);
+                });
+
+                // Show order count
+                $('#orderCount').text(`Showing ${$('.order-checkbox').length} orders, ${selectedCount} selected`);
+            }
+
+            // Clear selection
+            $('#clearSelectionBtn').click(function() {
+                $('.order-checkbox').prop('checked', false);
+                $('#selectAll').prop('checked', false);
+                updateSelectionState();
+            });
+
+            // Bulk action handlers
+            function submitBulkAction(action) {
+                const selectedOrders = $('.order-checkbox:checked');
+                const orderIds = Array.from(selectedOrders).map(cb => cb.value);
+
+                if (orderIds.length === 0) {
+                    showAlert('Please select at least one order', 'warning');
+                    return;
+                }
+
+                if (action === 'export-selected') {
+                    exportSelectedOrders(orderIds);
+                    return;
+                }
+
+                const actionText = action.replace('mark-', '').replace('-', ' ');
+                if (!confirm(`Are you sure you want to ${actionText} ${orderIds.length} selected order(s)?`)) {
+                    return;
+                }
+
+                // Create form for bulk action
+                const form = document.createElement('form');
+                form.method = 'post';
+                form.action = '@Url.Action("BulkAction")';
+
+                // Add anti-forgery token
+                const token = $('input[name="__RequestVerificationToken"]').val();
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = '__RequestVerificationToken';
+                tokenInput.value = token;
+                form.appendChild(tokenInput);
+
+                // Add action
+                const actionInput = document.createElement('input');
+                actionInput.type = 'hidden';
+                actionInput.name = 'action';
+                actionInput.value = action;
+                form.appendChild(actionInput);
+
+                // Add order IDs
+                orderIds.forEach(id => {
+                    const orderIdInput = document.createElement('input');
+                    orderIdInput.type = 'hidden';
+                    orderIdInput.name = 'orderIds';
+                    orderIdInput.value = id;
+                    form.appendChild(orderIdInput);
+                });
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+
+            // Individual bulk action buttons
+            $('#processSelectedBtn').click(function(e) {
+                e.preventDefault();
+                submitBulkAction('mark-processing');
+            });
+
+            $('#shipSelectedBtn').click(function(e) {
+                e.preventDefault();
+                submitBulkAction('mark-shipped');
+            });
+
+            $('#deliverSelectedBtn').click(function(e) {
+                e.preventDefault();
+                submitBulkAction('mark-delivered');
+            });
+
+            $('#paySelectedBtn').click(function(e) {
+                e.preventDefault();
+                submitBulkAction('mark-paid');
+            });
+
+            $('#assignSelectedBtn').click(function(e) {
+                e.preventDefault();
+                submitBulkAction('assign-me');
+            });
+
+            $('#exportSelectedBtn').click(function() {
+                const selectedOrders = $('.order-checkbox:checked');
+                const orderIds = Array.from(selectedOrders).map(cb => cb.value);
+                exportSelectedOrders(orderIds);
+            });
+
+            // Bulk action dropdown
+            $('#applyBulkActionBtn').click(function() {
+                const action = $('#bulkActionSelect').val();
+                if (action) {
+                    submitBulkAction(action);
+                }
+            });
+
+            // Quick action forms
+            $('form[action*="Edit"]').on('submit', function(e) {
+                const actionType = $(this).find('input[name="actionType"]').val();
+                const orderId = $(this).attr('action').split('/').pop();
+
+                if (actionType && actionType !== 'save') {
+                    const actionText = actionType.replace('mark-', '').replace('set-', '').replace('put-', '').replace('-', ' ');
+                    if (!confirm(`Are you sure you want to ${actionText} order #${orderId}?`)) {
+                        e.preventDefault();
+                        return false;
+                    }
+                }
+                return true;
+            });
+
+            // Export selected orders
+            function exportSelectedOrders(orderIds) {
+                const url = '@Url.Action("Export")' + '?format=csv&orderIds=' + orderIds.join(',');
+                window.open(url, '_blank');
+                showAlert(`Exporting ${orderIds.length} orders...`, 'info');
+            }
+
+            // Tracking modal
+            $(document).on('click', '.tracking-link', function(e) {
+                e.preventDefault();
+                const trackingNumber = $(this).data('tracking');
+                const carrier = $(this).data('carrier') || 'Unknown Carrier';
+
+                $('#trackingNumber').text(trackingNumber);
+                $('#trackingCarrier').text(carrier);
+
+                // Generate tracking URL based on carrier
+                let trackingUrl = '';
+                if (carrier.toLowerCase().includes('dhl')) {
+                    trackingUrl = `https://www.dhl.com/en/express/tracking.html?AWB=${trackingNumber}`;
+                } else if (carrier.toLowerCase().includes('fedex')) {
+                    trackingUrl = `https://www.fedex.com/fedextrack/?trknbr=${trackingNumber}`;
+                } else if (carrier.toLowerCase().includes('ups')) {
+                    trackingUrl = `https://www.ups.com/track?tracknum=${trackingNumber}`;
+                } else {
+                    trackingUrl = `#`;
+                }
+
+                $('#trackingUrl').val(trackingUrl);
+                $('#openTrackingBtn').off('click').on('click', function() {
+                    if (trackingUrl !== '#') {
+                        window.open(trackingUrl, '_blank');
+                    }
+                });
+
+                $('#trackingModal').modal('show');
+            });
+
+            // Clear filters
+            $('#clearFiltersBtn').click(function() {
+                window.location.href = '@Url.Action("Index")';
+            });
+
+            // Refresh page
+            $('#refreshBtn').click(function() {
+                location.reload();
+            });
+
+            // Auto-refresh every 30 seconds if there are pending orders
+            @if (ViewBag.PendingOrders > 0 || ViewBag.ProcessingOrders > 0)
+            {
+                    <text>
+                    setInterval(function() {
+                        location.reload();
+                    }, 30000);
+                    </text>
+            }
+
+            // Show alerts
+            function showAlert(message, type = 'success') {
+                const alertClass = type === 'success' ? 'alert-success' :
+                                 type === 'warning' ? 'alert-warning' :
+                                 type === 'error' ? 'alert-danger' : 'alert-info';
+
+                const alertHtml = `
+                    <div class="alert ${alertClass} alert-dismissible fade show fixed-top m-3" role="alert">
+                        ${message}
+                        <button type="button" class="close" data-dismiss="alert">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                `;
+
+                $('body').append(alertHtml);
+                setTimeout(() => $('.alert').alert('close'), 5000);
+            }
+
+            // Check for success/error messages from TempData
+            @if (TempData["SuccessMessage"] != null)
+            {
+                    <text>
+                    showAlert('@TempData["SuccessMessage"]', 'success');
+                    </text>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                    <text>
+                    showAlert('@TempData["ErrorMessage"]', 'error');
+                    </text>
+            }
+
+            // Initialize table sorting and filtering
+            $('#ordersTable').DataTable({
+                "pageLength": 25,
+                "order": [[1, 'desc']],
+                "language": {
+                    "search": "Filter:",
+                    "lengthMenu": "Show _MENU_ orders"
+                }
+            });
+
+            // Date range picker
+            $('#startDate, #endDate').change(function() {
+                const startDate = $('#startDate').val();
+                const endDate = $('#endDate').val();
+
+                if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+                    alert('End date cannot be earlier than start date');
+                    $(this).val('');
+                }
+            });
         });
     </script>
 }

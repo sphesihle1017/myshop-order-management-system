@@ -9,11 +9,7 @@ namespace MyShop.Controllers
         // GET: /Cart
         public IActionResult Index()
         {
-            // For server-side cart, you would retrieve from session/database
-            // But since we're using localStorage, just return an empty view
-            // The JavaScript will populate the cart from localStorage
-
-            // Optionally, you could pass a flag to indicate cart is client-side
+            
             ViewBag.IsClientSideCart = true;
             return View();
         }

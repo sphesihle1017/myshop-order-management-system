@@ -1,5 +1,4 @@
-﻿// Models/Product.cs
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyShop.Models
@@ -20,6 +19,11 @@ namespace MyShop.Models
         // Add Description field
         [StringLength(1000, ErrorMessage = "Description cannot exceed 1000 characters.")]
         public string? Description { get; set; }
+
+        // Add Size field
+        [StringLength(50, ErrorMessage = "Size cannot exceed 50 characters.")]
+        [Display(Name = "Size")]
+        public string? Size { get; set; }
 
         // Stock quantity fields
         [Required]

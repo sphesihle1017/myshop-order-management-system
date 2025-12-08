@@ -98,10 +98,10 @@ namespace MyShop.Controllers
                 return Json(new
                 {
                     success = true,
-                    subtotal = subtotal.ToString("0.00"),
-                    tax = tax.ToString("0.00"),
-                    shipping = shipping.ToString("0.00"),
-                    total = total.ToString("0.00"),
+                    subtotal = subtotal.ToString("0.00", new System.Globalization.CultureInfo("en-ZA")),
+                    tax = tax.ToString("0.00", new System.Globalization.CultureInfo("en-ZA")),
+                    shipping = shipping.ToString("0.00", new System.Globalization.CultureInfo("en-ZA")),
+                    total = total.ToString("0.00", new System.Globalization.CultureInfo("en-ZA")),
                     itemCount = cartItems.Sum(item => item.Quantity)
                 });
             }

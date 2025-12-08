@@ -23,8 +23,10 @@ namespace MyShop.Models
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal Total => Price * Quantity;
+     
 
-        // Navigation properties
+        [ForeignKey("OrderId")]
         public virtual Checkout Order { get; set; }
+       
     }
 }

@@ -1,7 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Order Confirmation";
     var orderId = ViewBag.OrderId ?? "000000";
-    var orderTotal = ViewBag.OrderTotal ?? "R 0.00";
+    var orderTotal = ViewBag.OrderTotal;
 }
 
 <style>
@@ -101,6 +101,8 @@
         <div class="order-detail">
             <span>Total Amount:</span>
             <strong class="text-primary"> @orderTotal</strong>
+
+
         </div>
         <div class="order-detail">
             <span>Status:</span>
