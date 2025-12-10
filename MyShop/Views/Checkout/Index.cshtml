@@ -499,7 +499,8 @@
                 ProductName: item.productName,
                 Price: item.price,
                 Quantity: item.quantity
-            }));
+               
+            }));    
 
             // Send to server to calculate totals
             fetch('/Checkout/CalculateTotals', {
@@ -550,6 +551,7 @@
                             </div>
                             <div class="d-flex justify-content-between text-muted small">
                                 <span>Qty: ${item.quantity}</span>
+                              
                                 <span>R ${item.price.toFixed(2)} each</span>
                             </div>
                         </div>

@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - My Shop</title>
-    <!-- Modern Fonts -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,11 +20,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- ADD THIS LINE -->
+  
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
-    <!-- Loader Container -->
+    <!-- Loader Container (From Universe.io)-->
     <div id="globalLoader" class="loader-overlay" style="display: none;">
         <div class="loader">
             <div class="truckWrapper">
@@ -242,28 +242,27 @@
                     <h5 class="text-uppercase fw-bold mb-4">Sphesihle's Shop</h5>
                     <p>Your one-stop shop for quality products at affordable prices. We're committed to bringing you the best shopping experience.</p>
                     <div class="social-icons mt-3">
-                        <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
-                        <a href="#" class="text-white me-3"><i class="bi bi-twitter"></i></a>
-                        <a href="#" class="text-white me-3"><i class="bi bi-instagram"></i></a>
-                        <a href="#" class="text-white"><i class="bi bi-linkedin"></i></a>
+                        <a href="https://www.facebook.com/" class="text-white me-3"><i class="bi bi-facebook"></i></a>       
+                        <a href="https://www.instagram.com/" class="text-white me-3"><i class="bi bi-instagram"></i></a>
+                        <a href="https://www.linkedin.com/in/sphesihleshezi1017/" class="text-white"><i class="bi bi-linkedin"></i></a>
                     </div>
                 </div>
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h5 class="text-uppercase fw-bold mb-4">Shop</h5>
                     <ul class="list-unstyled">
-                        <li class="mb-2"><a href="#" class="text-white">All Products</a></li>
-                        <li class="mb-2"><a href="#" class="text-white">New Arrivals</a></li>
-                        <li class="mb-2"><a href="#" class="text-white">Featured</a></li>
-                        <li class="mb-2"><a href="#" class="text-white">Discounts</a></li>
+                        <li class="mb-2"><a asp-controller="Product" asp-action="Index" class="text-white">All Products</a></li>
+                        <li class="mb-2"><a asp-controller ="Product" asp-action="Index" class="text-white">New Arrivals</a></li>
+                        <li class="mb-2"><a asp-controller="Product" asp-action="Index" class="text-white">Featured</a></li>
+                        <li class="mb-2"><a asp-controller="Product" asp-action="Index" class="text-white">Discounts</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h5 class="text-uppercase fw-bold mb-4">Help</h5>
                     <ul class="list-unstyled">
                         <li class="mb-2"><a href="#" class="text-white">FAQ</a></li>
-                        <li class="mb-2"><a href="#" class="text-white">Shipping</a></li>
-                        <li class="mb-2"><a href="#" class="text-white">Returns</a></li>
-                        <li class="mb-2"><a href="#" class="text-white">Contact Us</a></li>
+                        <li class="mb-2"><a asp-controller="Track" asp-action="Index" class="text-white">Shipping</a></li>
+                        <li class="mb-2"><a asp-controller="Track" asp-action="Index" class="text-white">Returns</a></li>
+                        <li class="mb-2"><a href="https://www.linkedin.com/in/sphesihleshezi1017/" class="text-white">Contact Us</a></li>
                     </ul>
                 </div>
 
@@ -272,7 +271,7 @@
             <hr class="my-4">
             <div class="row align-items-center">
                 <div class="col-md-6 text-center text-md-start">
-                    &copy; 2025 Sphesihle's Shop. All rights reserved.
+                    &copy; Developer: Sphesihle Shezi
 
                 </div>
             </div>
@@ -304,7 +303,7 @@
                 setTimeout(function() {
                     loader.style.display = 'none';
                 }, 500); // Match this with CSS transition time
-            }, 4000); // 5 seconds
+            }, 2000); // 2 seconds
         });
 
         // Optional: Also hide loader when page is fully loaded (before 5 seconds)

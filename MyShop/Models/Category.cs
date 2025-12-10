@@ -13,6 +13,7 @@
         public string CategoryName { get; set; }
        // public string Gender { get; set; }
 
+
         // Navigation property: One category can have many products
         public virtual ICollection<Product> Products { get; set; }
     }

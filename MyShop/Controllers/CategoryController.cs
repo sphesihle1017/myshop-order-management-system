@@ -57,7 +57,7 @@ namespace ONT3001EFExample.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Category category)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 try
                 {

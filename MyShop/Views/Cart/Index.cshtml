@@ -40,6 +40,7 @@
                                             <th>Product</th>
                                             <th>Price</th>
                                             <th>Quantity</th>
+                                            <th>Size</th>
                                             <th>Total</th>
                                             <th>Actions</th>
                                         </tr>
@@ -137,7 +138,7 @@
                         <td>
                             <strong>${item.productName}</strong>
                             <br>
-                            <small class="text-muted">Product ID: ${item.productId}</small>
+                           
                         </td>
                         <td>R ${item.price.toFixed(2)}</td>
                         <td>
@@ -148,6 +149,18 @@
                                    style="width: 80px;"
                                    data-product-id="${item.productId}">
                         </td>
+                          <td>
+                            <select id="sizes">
+                                 <option value="${item.Size}">Small</option>
+                                 <option value="${item.Size}">Medium</option>
+                                 <<option value="${item.Size}">Large</option>
+                                 
+                            </select>
+                           
+                                
+                                
+                        </td>
+
                         <td class="item-total">R ${(item.price * item.quantity).toFixed(2)}</td>
                         <td>
                             <button class="btn btn-sm btn-outline-danger remove-item"
@@ -235,13 +248,11 @@
                 alert('Your cart is empty!');
                 return;
             }
-
-            // In a real app, you would redirect to checkout page
             // For now, just show a confirmation
             alert(`Proceeding to checkout with ${cartManager.getTotalItems()} items. Total: R ${cartManager.getTotalPrice().toFixed(2)}`);
 
-            // Optional: Save cart to server/database before checkout
-            // cartManager.syncWithServer();
+            //Save cart to server/database before checkout
+             cartManager.syncWithServer();
         });
     </script>
 }
