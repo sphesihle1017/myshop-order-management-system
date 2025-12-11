@@ -1,10 +1,4 @@
 🛍️ MyShop E-commerce Platform (.NET 8)
-https://img.shields.io/badge/.NET-8.0-512bd4
-https://img.shields.io/badge/ASP.NET_Core-8.0-blue
-https://img.shields.io/badge/Entity_Framework-8.0-green
-https://img.shields.io/badge/Bootstrap-5.3-blueviolet
-https://img.shields.io/badge/License-MIT-green
-https://img.shields.io/badge/Status-Production_Ready-success
 
 A modern, production-ready ASP.NET Core 8 e-commerce platform with complete order management and real-time analytics.
 
