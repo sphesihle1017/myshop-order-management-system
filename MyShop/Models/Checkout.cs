@@ -42,6 +42,12 @@ namespace MyShop.Models
         [Display(Name = "Country")]
         public string Country { get; set; } = "South Africa";
 
+        [Display(Name = "Is Deleted")]
+        public bool IsDeleted { get; set; } = false;
+
+        [Display(Name = "Deleted At")]
+        public DateTime? DeletedAt { get; set; }
+
         // Payment Information
         [Display(Name = "Payment Method")]
         public string PaymentMethod { get; set; } = "Credit Card";

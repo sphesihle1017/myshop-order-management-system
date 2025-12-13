@@ -1,0 +1,304 @@
+﻿@model IEnumerable<MyShop.Models.Checkout>
+
+@{
+    ViewData["Title"] = "Trash - Order Management";
+    ViewData["ActivePage"] = "Orders";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2">
+            <i class="fas fa-trash-alt text-danger"></i> Trash
+        </h1>
+        <div class="btn-group">
+            <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Orders
+            </a>
+            <form method="post" asp-action="EmptyTrash" class="d-inline"
+                  onsubmit="return confirm('Are you sure you want to permanently delete ALL orders in trash? This action cannot be undone.');">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-danger ml-2">
+                    <i class="fas fa-trash"></i> Empty Trash
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-danger">Search Deleted Orders</h6>
+        </div>
+        <div class="card-body">
+            <form method="get" class="form-inline">
+                <div class="input-group mb-2 mr-sm-2" style="width: 300px;">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    </div>
+                    <input type="text" class="form-control" name="search"
+                           placeholder="Search deleted orders..." value="@ViewBag.SearchTerm">
+                </div>
+
+                <select class="form-control mb-2 mr-sm-2" name="sort">
+                    <option value="newest" selected="@(ViewBag.CurrentSort == "newest")">Recently Deleted</option>
+                    <option value="oldest" selected="@(ViewBag.CurrentSort == "oldest")">Oldest Deleted</option>
+                    <option value="oldest-order" selected="@(ViewBag.CurrentSort == "oldest-order")">Oldest Order Date</option>
+                </select>
+
+                <button type="submit" class="btn btn-primary mb-2">
+                    <i class="fas fa-filter"></i> Apply
+                </button>
+                <a href="@Url.Action("Trash")" class="btn btn-secondary mb-2 ml-2">
+                    <i class="fas fa-times"></i> Clear
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bulk Actions -->
+    @if (Model.Any())
+    {
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <form method="post" asp-action="BulkRestore" id="bulkRestoreForm" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="orderIds" id="restoreOrderIds">
+                    <button type="button" class="btn btn-success btn-sm" id="restoreSelectedBtn" disabled>
+                        <i class="fas fa-undo"></i> Restore Selected
+                    </button>
+                </form>
+                <form method="post" asp-action="BulkAction" id="bulkDeleteForm" class="d-inline ml-2">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="action" value="permanent-delete">
+                    <input type="hidden" name="orderIds" id="deleteOrderIds">
+                    <button type="button" class="btn btn-danger btn-sm" id="deleteSelectedBtn" disabled>
+                        <i class="fas fa-trash"></i> Delete Permanently
+                    </button>
+                </form>
+                <button type="button" class="btn btn-secondary btn-sm ml-2" id="selectAllBtn">
+                    <i class="fas fa-check-square"></i> Select All
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm ml-2" id="clearSelectionBtn" disabled>
+                    <i class="fas fa-times"></i> Clear Selection
+                </button>
+            </div>
+        </div>
+    }
+
+    <!-- Orders Table -->
+    <div class="card shadow">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-danger">
+                Deleted Orders (@ViewBag.DeletedCount)
+            </h6>
+            <span class="text-muted small">
+                Orders are automatically deleted after 30 days
+            </span>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th width="50">
+                                    <input type="checkbox" id="selectAllCheckbox">
+                                </th>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Order Date</th>
+                                <th>Deleted Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th width="200">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="order-checkbox" value="@order.OrderId">
+                                    </td>
+                                    <td>
+                                        <strong>#@order.OrderId</strong>
+                                        @if (!string.IsNullOrEmpty(order.InternalReference))
+                                        {
+                                            <br>
+                                            <small class="text-muted">Ref: @order.InternalReference</small>
+                                        }
+                                    </td>
+                                    <td>
+                                        <strong>@order.FirstName @order.LastName</strong><br>
+                                        <small class="text-muted">@order.Email</small>
+                                    </td>
+                                    <td>
+                                        <small>@order.OrderDate.ToString("MMM dd, yyyy HH:mm")</small>
+                                    </td>
+                                    <td>
+                                        <small>@order.DeletedAt?.ToString("MMM dd, yyyy HH:mm")</small>
+                                    </td>
+                                    <td>
+                                        <strong>@order.Total.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-secondary">@order.OrderStatus</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <form method="post" asp-action="Restore" asp-route-id="@order.OrderId" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-success btn-sm"
+                                                        title="Restore Order">
+                                                    <i class="fas fa-undo"></i> Restore
+                                                </button>
+                                            </form>
+                                            <a href="@Url.Action("PermanentDelete", new { id = order.OrderId })"
+                                               class="btn btn-danger btn-sm ml-1" title="Delete Permanently">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-trash-alt fa-4x text-muted mb-3"></i>
+                    <h4>Trash is empty</h4>
+                    <p class="text-muted">No deleted orders found</p>
+                    <a href="@Url.Action("Index")" class="btn btn-primary">
+                        <i class="fas fa-arrow-left"></i> Back to Orders
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            let selectedOrders = [];
+
+            // Select all checkboxes
+            $('#selectAllCheckbox').change(function() {
+                const isChecked = this.checked;
+                $('.order-checkbox').prop('checked', isChecked);
+                updateSelectedOrders();
+            });
+
+            // Individual checkbox change
+            $('.order-checkbox').change(function() {
+                updateSelectedOrders();
+            });
+
+            // Select All button
+            $('#selectAllBtn').click(function() {
+                $('.order-checkbox').prop('checked', true);
+                $('#selectAllCheckbox').prop('checked', true);
+                updateSelectedOrders();
+            });
+
+            // Clear selection
+            $('#clearSelectionBtn').click(function() {
+                $('.order-checkbox').prop('checked', false);
+                $('#selectAllCheckbox').prop('checked', false);
+                updateSelectedOrders();
+            });
+
+            // Update selected orders array and UI
+            function updateSelectedOrders() {
+                selectedOrders = [];
+                $('.order-checkbox:checked').each(function() {
+                    selectedOrders.push($(this).val());
+                });
+
+                const hasSelection = selectedOrders.length > 0;
+
+                // Update button states
+                $('#restoreSelectedBtn').prop('disabled', !hasSelection);
+                $('#deleteSelectedBtn').prop('disabled', !hasSelection);
+                $('#clearSelectionBtn').prop('disabled', !hasSelection);
+
+                // Update button text
+                if (hasSelection) {
+                    $('#restoreSelectedBtn').text(`Restore Selected (${selectedOrders.length})`);
+                    $('#deleteSelectedBtn').text(`Delete Selected (${selectedOrders.length})`);
+                } else {
+                    $('#restoreSelectedBtn').text('Restore Selected');
+                    $('#deleteSelectedBtn').text('Delete Selected');
+                }
+            }
+
+            // Restore selected orders
+            $('#restoreSelectedBtn').click(function() {
+                if (selectedOrders.length === 0) return;
+
+                if (!confirm(`Restore ${selectedOrders.length} selected order(s)?`)) return;
+
+                // Set the order IDs in the form and submit
+                $('#restoreOrderIds').val(selectedOrders.join(','));
+                $('#bulkRestoreForm').submit();
+            });
+
+            // Delete selected orders permanently
+            $('#deleteSelectedBtn').click(function() {
+                if (selectedOrders.length === 0) return;
+
+                if (!confirm(`Permanently delete ${selectedOrders.length} selected order(s)? This action cannot be undone.`)) return;
+
+                // Set the order IDs in the form and submit
+                $('#deleteOrderIds').val(selectedOrders.join(','));
+                $('#bulkDeleteForm').submit();
+            });
+
+            // Individual restore form confirmation
+            $('form[action*="Restore"]').on('submit', function(e) {
+                const orderId = $(this).attr('action').split('/').pop();
+                if (!confirm(`Restore order #${orderId}?`)) {
+                    e.preventDefault();
+                    return false;
+                }
+                return true;
+            });
+
+            // Show alerts
+            @if (TempData["SuccessMessage"] != null)
+            {
+                    <text>
+                    showAlert('@TempData["SuccessMessage"]', 'success');
+                    </text>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                    <text>
+                    showAlert('@TempData["ErrorMessage"]', 'error');
+                    </text>
+            }
+
+            function showAlert(message, type = 'success') {
+                const alertClass = type === 'success' ? 'alert-success' :
+                                 type === 'error' ? 'alert-danger' : 'alert-info';
+
+                const alertHtml = `
+                    <div class="alert ${alertClass} alert-dismissible fade show fixed-top m-3" role="alert">
+                        ${message}
+                        <button type="button" class="close" data-dismiss="alert">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                `;
+
+                $('body').append(alertHtml);
+                setTimeout(() => $('.alert').alert('close'), 5000);
+            }
+        });
+    </script>
+}
