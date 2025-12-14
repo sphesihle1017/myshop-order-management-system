@@ -70,10 +70,21 @@ namespace MyShop.Controllers
         public IActionResult Confirmation(int id)
         {
             ViewBag.OrderId = id;
-            ViewBag.OrderTotal = TempData["OrderTotal"] ?? "R 0.00";
+
+            // If TempData contains a numeric value, use it; otherwise default to 0
+            decimal orderTotal = 0m;
+
+            if (TempData["OrderTotal"] != null)
+            {
+                // Try to safely convert to decimal
+                decimal.TryParse(TempData["OrderTotal"].ToString(), out orderTotal);
+            }
+
+            ViewBag.OrderTotal = orderTotal; 
 
             return View();
         }
+
 
         // GET: /Checkout/CalculateTotals (AJAX endpoint)
         [HttpPost]

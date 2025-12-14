@@ -1,6 +1,7 @@
 ﻿// Controllers/CartController.cs
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
+using MyShop.Models;
 
 namespace MyShop.Controllers
 {
@@ -9,7 +10,7 @@ namespace MyShop.Controllers
         // GET: /Cart
         public IActionResult Index()
         {
-            
+
             ViewBag.IsClientSideCart = true;
             return View();
         }
@@ -42,16 +43,13 @@ namespace MyShop.Controllers
                 itemCount = cartItems?.Count ?? 0
             });
         }
+        // GET: /Cart/Checkout
+        public IActionResult Checkout()
+        {
+            ViewBag.IsClientSideCart = true; // Keep consistent with Index
+            return View();
+        }
+
     }
 
-    // Cart Item Model
-    public class CartItem
-    {
-        public int ProductId { get; set; }
-        public string ProductName { get; set; }
-        public decimal Price { get; set; }
-        public int Quantity { get; set; }
-        public string Size { get; set; }
-        public decimal Total => Price * Quantity;
-    }
 }

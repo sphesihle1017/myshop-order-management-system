@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MyShop.Data;
-// REMOVE any using statement for MyShop.Models if it exists
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +11,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Add Identity Services - Use IdentityUser
+// Add Identity Services
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
@@ -30,6 +29,16 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+});
+
+// Add session services
+builder.Services.AddDistributedMemoryCache(); // required for session
+builder.Services.AddSession(options =>
+{
+    options.Cookie.Name = ".MyShop.Session";
+    options.IdleTimeout = TimeSpan.FromHours(1);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
 });
 
 var app = builder.Build();
@@ -50,6 +59,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// Add session before authentication/authorization
+app.UseSession();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -60,13 +72,15 @@ using (var scope = app.Services.CreateScope())
     await SeedRolesAndAdmin(serviceProvider);
 }
 
+// Map default route
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
 
-// Seed method for IdentityUser
+// Seed method for Identity
+
 async Task SeedRolesAndAdmin(IServiceProvider serviceProvider)
 {
     var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -76,8 +90,7 @@ async Task SeedRolesAndAdmin(IServiceProvider serviceProvider)
     string[] roleNames = { "Admin", "Customer", "Manager" };
     foreach (var roleName in roleNames)
     {
-        var roleExist = await roleManager.RoleExistsAsync(roleName);
-        if (!roleExist)
+        if (!await roleManager.RoleExistsAsync(roleName))
         {
             await roleManager.CreateAsync(new IdentityRole(roleName));
         }

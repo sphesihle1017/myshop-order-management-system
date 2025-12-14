@@ -35,7 +35,7 @@ namespace MyShop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 // Check if email exists
                 var existingUser = await _userManager.FindByEmailAsync(model.Email);

@@ -1,8 +1,10 @@
-﻿@{
+﻿@using System.Globalization
+@{
     ViewData["Title"] = "Order Confirmation";
     var orderId = ViewBag.OrderId ?? "000000";
-    var orderTotal = ViewBag.OrderTotal;
+    decimal total = Convert.ToDecimal(ViewBag.OrderTotal ?? 0m);
 }
+
 
 <style>
    footer{
@@ -100,7 +102,7 @@
         </div>
         <div class="order-detail">
             <span>Total Amount:</span>
-            <strong class="text-primary"> @orderTotal</strong>
+            <strong class="text-primary">@total.ToString("C", new CultureInfo("en-ZA"))</strong>
 
 
         </div>

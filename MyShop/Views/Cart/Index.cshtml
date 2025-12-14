@@ -150,16 +150,13 @@
                                    data-product-id="${item.productId}">
                         </td>
                           <td>
-                            <select id="sizes">
-                                 <option value="${item.Size}">Small</option>
-                                 <option value="${item.Size}">Medium</option>
-                                 <<option value="${item.Size}">Large</option>
-                                 
+                            <select class="form-select form-select-sm size-select" data-product-id="${item.productId}">
+                                <option value="Small" ${item.size === 'Small' ? 'selected' : ''}>Small</option>
+                                <option value="Medium" ${item.size === 'Medium' ? 'selected' : ''}>Medium</option>
+                                <option value="Large" ${item.size === 'Large' ? 'selected' : ''}>Large</option>
                             </select>
-                           
-                                
-                                
                         </td>
+
 
                         <td class="item-total">R ${(item.price * item.quantity).toFixed(2)}</td>
                         <td>

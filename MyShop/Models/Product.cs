@@ -82,5 +82,7 @@ namespace MyShop.Models
                     return "success";
             }
         }
+        public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+
     }
 }
