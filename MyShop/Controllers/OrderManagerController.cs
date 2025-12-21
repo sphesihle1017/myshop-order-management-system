@@ -762,6 +762,51 @@ namespace MyShop.Controllers
 
             return RedirectToAction(nameof(Trash));
         }
+     
+
+        // POST: /OrderManager/BulkPermanentDelete
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> BulkPermanentDelete(int[] orderIds)
+        {
+            if (orderIds == null || !orderIds.Any())
+            {
+                TempData["ErrorMessage"] = "No orders selected";
+                return RedirectToAction(nameof(Trash));
+            }
+
+            try
+            {
+                var orders = await _context.Checkouts
+                    .Include(o => o.OrderItems)
+                    .Where(o => orderIds.Contains(o.OrderId) && o.IsDeleted)
+                    .ToListAsync();
+
+                int count = 0;
+                foreach (var order in orders)
+                {
+                    // Delete order items first
+                    if (order.OrderItems != null && order.OrderItems.Any())
+                    {
+                        _context.OrderItems.RemoveRange(order.OrderItems);
+                    }
+
+                    // Delete the order
+                    _context.Checkouts.Remove(order);
+                    count++;
+                }
+
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = $"{count} orders permanently deleted";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error performing bulk permanent delete");
+                TempData["ErrorMessage"] = "Error deleting orders";
+            }
+
+            return RedirectToAction(nameof(Trash));
+        }
     }
 
 }

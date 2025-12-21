@@ -205,55 +205,35 @@
         </div>
         <div class="card-body">
             <div class="d-flex flex-wrap gap-2 mb-3">
-                <!-- Bulk Action Forms -->
-                <form method="post" asp-action="BulkAction" id="bulkProcessingForm" class="d-inline">
-                    <input type="hidden" name="action" value="mark-processing">
-                    <button type="submit" class="btn btn-info btn-sm" id="processSelectedBtn" disabled>
-                        <i class="fas fa-cogs"></i> Process Selected
-                    </button>
-                </form>
+                <!-- Bulk Action Buttons -->
+                <button type="button" class="btn btn-info btn-sm" id="processSelectedBtn" disabled>
+                    <i class="fas fa-cogs"></i> Process Selected
+                </button>
 
-                <form method="post" asp-action="BulkAction" id="bulkShippedForm" class="d-inline">
-                    <input type="hidden" name="action" value="mark-shipped">
-                    <button type="submit" class="btn btn-primary btn-sm" id="shipSelectedBtn" disabled>
-                        <i class="fas fa-shipping-fast"></i> Ship Selected
-                    </button>
-                </form>
+                <button type="button" class="btn btn-primary btn-sm" id="shipSelectedBtn" disabled>
+                    <i class="fas fa-shipping-fast"></i> Ship Selected
+                </button>
 
-                <form method="post" asp-action="BulkAction" id="bulkDeliveredForm" class="d-inline">
-                    <input type="hidden" name="action" value="mark-delivered">
-                    <button type="submit" class="btn btn-success btn-sm" id="deliverSelectedBtn" disabled>
-                        <i class="fas fa-truck"></i> Deliver Selected
-                    </button>
-                </form>
+                <button type="button" class="btn btn-success btn-sm" id="deliverSelectedBtn" disabled>
+                    <i class="fas fa-truck"></i> Deliver Selected
+                </button>
 
-                <form method="post" asp-action="BulkAction" id="bulkPaidForm" class="d-inline">
-                    <input type="hidden" name="action" value="mark-paid">
-                    <button type="submit" class="btn btn-success btn-sm" id="paySelectedBtn" disabled>
-                        <i class="fas fa-check-circle"></i> Mark Paid
-                    </button>
-                </form>
+                <button type="button" class="btn btn-success btn-sm" id="paySelectedBtn" disabled>
+                    <i class="fas fa-check-circle"></i> Mark Paid
+                </button>
 
-                <form method="post" asp-action="BulkAction" id="bulkAssignForm" class="d-inline">
-                    <input type="hidden" name="action" value="assign-me">
-                    <button type="submit" class="btn btn-warning btn-sm" id="assignSelectedBtn" disabled>
-                        <i class="fas fa-user-check"></i> Assign to Me
-                    </button>
-                </form>
+                <button type="button" class="btn btn-warning btn-sm" id="assignSelectedBtn" disabled>
+                    <i class="fas fa-user-check"></i> Assign to Me
+                </button>
 
-                <form method="post" asp-action="BulkAction" id="bulkSoftDeleteForm" class="d-inline">
-                    <input type="hidden" name="action" value="soft-delete">
-                    <button type="submit" class="btn btn-danger btn-sm" id="softDeleteSelectedBtn" disabled>
-                        <i class="fas fa-trash"></i> Move to Trash
-                    </button>
-                </form>
+                <button type="button" class="btn btn-danger btn-sm" id="softDeleteSelectedBtn" disabled>
+                    <i class="fas fa-trash"></i> Move to Trash
+                </button>
 
-                <form method="post" asp-action="BulkRestore" id="bulkRestoreForm" class="d-inline @(ViewBag.ShowDeleted ? "" : "d-none")">
-                    <input type="hidden" name="orderIds" id="restoreOrderIds">
-                    <button type="submit" class="btn btn-success btn-sm" id="restoreSelectedBtn" disabled>
-                        <i class="fas fa-undo"></i> Restore Selected
-                    </button>
-                </form>
+                <button type="button" class="btn btn-success btn-sm" id="restoreSelectedBtn" disabled
+                        style="@(!ViewBag.ShowDeleted ? "display: none;" : "")">
+                    <i class="fas fa-undo"></i> Restore Selected
+                </button>
 
                 <button type="button" class="btn btn-secondary btn-sm" id="exportSelectedBtn" disabled>
                     <i class="fas fa-download"></i> Export Selected
@@ -389,7 +369,6 @@
                                         {
                                             <br>
                                             <small class="text-success">Discount: @order.Discount.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</small>
-
                                         }
                                     </td>
                                     <td>
@@ -436,6 +415,7 @@
                                                 @if (order.OrderStatus == "Pending" || order.OrderStatus == "On Hold")
                                                 {
                                                     <form method="post" asp-action="Edit" asp-route-id="@order.OrderId" class="d-inline">
+                                                        @Html.AntiForgeryToken()
                                                         <input type="hidden" name="actionType" value="mark-processing">
                                                         <button type="submit" class="btn btn-info btn-sm" title="Start Processing">
                                                             <i class="fas fa-cogs"></i> Process
@@ -445,6 +425,7 @@
                                                 @if (order.OrderStatus == "Processing")
                                                 {
                                                     <form method="post" asp-action="Edit" asp-route-id="@order.OrderId" class="d-inline">
+                                                        @Html.AntiForgeryToken()
                                                         <input type="hidden" name="actionType" value="mark-shipped">
                                                         <button type="submit" class="btn btn-primary btn-sm" title="Mark as Shipped">
                                                             <i class="fas fa-shipping-fast"></i> Ship
@@ -454,6 +435,7 @@
                                                 @if (order.OrderStatus == "Shipped")
                                                 {
                                                     <form method="post" asp-action="Edit" asp-route-id="@order.OrderId" class="d-inline">
+                                                        @Html.AntiForgeryToken()
                                                         <input type="hidden" name="actionType" value="mark-delivered">
                                                         <button type="submit" class="btn btn-success btn-sm" title="Mark as Delivered">
                                                             <i class="fas fa-truck"></i> Deliver
@@ -463,6 +445,7 @@
                                                 @if (order.PaymentStatus != "Paid")
                                                 {
                                                     <form method="post" asp-action="Edit" asp-route-id="@order.OrderId" class="d-inline">
+                                                        @Html.AntiForgeryToken()
                                                         <input type="hidden" name="actionType" value="mark-paid">
                                                         <button type="submit" class="btn btn-success btn-sm" title="Mark as Paid">
                                                             <i class="fas fa-check-circle"></i> Paid
@@ -472,6 +455,7 @@
                                                 @if (order.Priority != "High" && order.OrderStatus != "Cancelled" && order.OrderStatus != "Delivered")
                                                 {
                                                     <form method="post" asp-action="Edit" asp-route-id="@order.OrderId" class="d-inline">
+                                                        @Html.AntiForgeryToken()
                                                         <input type="hidden" name="actionType" value="set-high-priority">
                                                         <button type="submit" class="btn btn-warning btn-sm" title="Set High Priority">
                                                             <i class="fas fa-exclamation"></i>
@@ -509,6 +493,7 @@
                                                     {
                                                         <form method="post" asp-action="Edit" asp-route-id="@order.OrderId"
                                                               style="display: inline;">
+                                                            @Html.AntiForgeryToken()
                                                             <input type="hidden" name="actionType" value="send-tracking">
                                                             <button type="submit" class="dropdown-item">
                                                                 <i class="fas fa-envelope text-warning"></i> Send Tracking
@@ -517,6 +502,7 @@
                                                     }
                                                     <form method="post" asp-action="Edit" asp-route-id="@order.OrderId"
                                                           style="display: inline;">
+                                                        @Html.AntiForgeryToken()
                                                         <input type="hidden" name="actionType" value="generate-invoice">
                                                         <button type="submit" class="dropdown-item">
                                                             <i class="fas fa-file-invoice-dollar text-primary"></i> Generate Invoice
@@ -526,6 +512,7 @@
                                                     {
                                                         <form method="post" asp-action="Edit" asp-route-id="@order.OrderId"
                                                               style="display: inline;">
+                                                            @Html.AntiForgeryToken()
                                                             <input type="hidden" name="actionType" value="put-on-hold">
                                                             <button type="submit" class="dropdown-item">
                                                                 <i class="fas fa-pause text-warning"></i> Put on Hold
@@ -669,7 +656,7 @@
             });
 
             // Update selection state when individual checkboxes change
-            $('.order-checkbox').change(function() {
+            $(document).on('change', '.order-checkbox', function() {
                 updateSelectionState();
             });
 
@@ -685,7 +672,7 @@
                 const isAllSelected = selectedCount === $('.order-checkbox').length;
 
                 // Update select all checkbox
-                $('#selectAll').prop('checked', isAllSelected);
+                $('#selectAll').prop('checked', isAllSelected && $('.order-checkbox').length > 0);
 
                 // Update counter
                 if (isAnySelected) {
@@ -695,30 +682,26 @@
                     $('#selectionCounter').addClass('d-none');
                 }
 
-                // Enable/disable buttons
+                // Enable/disable bulk action buttons
                 const buttons = [
                     '#processSelectedBtn', '#shipSelectedBtn', '#deliverSelectedBtn',
-                    '#paySelectedBtn', '#assignSelectedBtn', '#exportSelectedBtn',
-                    '#clearSelectionBtn', '#applyBulkActionBtn'
+                    '#paySelectedBtn', '#assignSelectedBtn', '#softDeleteSelectedBtn',
+                    '#exportSelectedBtn', '#clearSelectionBtn', '#applyBulkActionBtn'
                 ];
 
                 buttons.forEach(btn => {
                     $(btn).prop('disabled', !isAnySelected);
                 });
 
-                // Show/hide soft delete/restore buttons based on view mode
+                // Enable/disable restore button separately for trash view
                 if ('@ViewBag.ShowDeleted' === 'True') {
-                    $('#softDeleteSelectedBtn').hide();
-                    $('#restoreSelectedBtn').show().prop('disabled', !isAnySelected);
-                } else {
-                    $('#softDeleteSelectedBtn').show().prop('disabled', !isAnySelected);
-                    $('#restoreSelectedBtn').hide();
+                    $('#restoreSelectedBtn').prop('disabled', !isAnySelected);
                 }
 
                 // Show order count
-                $('#orderCount').text(`Showing ${$('.order-checkbox').length} orders, ${selectedCount} selected`);
+                const totalOrders = $('.order-checkbox').length;
+                $('#orderCount').text(`Showing ${totalOrders} orders, ${selectedCount} selected`);
             }
-
 
             // Clear selection
             $('#clearSelectionBtn').click(function() {
@@ -727,7 +710,7 @@
                 updateSelectionState();
             });
 
-            // Bulk action handlers
+            // Generic bulk action handler
             function submitBulkAction(action) {
                 if (selectedOrders.length === 0) {
                     showAlert('Please select at least one order', 'warning');
@@ -753,8 +736,28 @@
                     case 'export-selected':
                         exportSelectedOrders(selectedOrders);
                         return;
+                    case 'mark-processing':
+                        actionText = 'mark as processing';
+                        confirmMessage = `Mark ${selectedOrders.length} selected order(s) as Processing?`;
+                        break;
+                    case 'mark-shipped':
+                        actionText = 'mark as shipped';
+                        confirmMessage = `Mark ${selectedOrders.length} selected order(s) as Shipped?`;
+                        break;
+                    case 'mark-delivered':
+                        actionText = 'mark as delivered';
+                        confirmMessage = `Mark ${selectedOrders.length} selected order(s) as Delivered?`;
+                        break;
+                    case 'mark-paid':
+                        actionText = 'mark as paid';
+                        confirmMessage = `Mark ${selectedOrders.length} selected order(s) as Paid?`;
+                        break;
+                    case 'assign-me':
+                        actionText = 'assign to me';
+                        confirmMessage = `Assign ${selectedOrders.length} selected order(s) to you?`;
+                        break;
                     default:
-                        actionText = action.replace('mark-', '').replace('-', ' ');
+                        actionText = action;
                         confirmMessage = `Are you sure you want to ${actionText} ${selectedOrders.length} selected order(s)?`;
                 }
 
@@ -853,8 +856,8 @@
                 }
             });
 
-            // Quick action forms
-            $('form[action*="Edit"]').on('submit', function(e) {
+            // Quick action forms (individual order actions)
+            $(document).on('submit', 'form[action*="Edit"]', function(e) {
                 const actionType = $(this).find('input[name="actionType"]').val();
                 const orderId = $(this).attr('action').split('/').pop();
 
@@ -868,8 +871,8 @@
                 return true;
             });
 
-            // Handle delete confirmation
-            $('a[href*="Delete"]').click(function(e) {
+            // Handle delete confirmation (individual orders)
+            $(document).on('click', 'a[href*="Delete"]', function(e) {
                 e.preventDefault();
                 const url = $(this).attr('href');
                 const orderId = url.split('/').pop();
@@ -888,14 +891,14 @@
                         <p>Are you absolutely sure you want to permanently delete this order?</p>
                     `);
                 } else {
-                    $('#deleteModalMessage').text(`Move order #${orderId} to trash? You can restore it later from the trash.`);
+                    $('#deleteModalMessage').html(`Move order #${orderId} to trash? You can restore it later from the trash.`);
                 }
 
                 deleteFormUrl = url;
                 $('#confirmDeleteModal').modal('show');
             });
 
-            // Confirm delete button
+            // Confirm delete button for individual orders
             $('#confirmDeleteBtn').click(function() {
                 if (isPermanentDelete) {
                     // For permanent delete, we need to submit a form with anti-forgery token
@@ -920,8 +923,8 @@
                 $('#confirmDeleteModal').modal('hide');
             });
 
-            // Handle restore forms
-            $('form[action*="Restore"]').on('submit', function(e) {
+            // Handle restore forms (individual orders)
+            $(document).on('submit', 'form[action*="Restore"]', function(e) {
                 const orderId = $(this).attr('action').split('/').pop();
                 if (!confirm(`Restore order #${orderId}?`)) {
                     e.preventDefault();
@@ -985,15 +988,15 @@
             // Auto-refresh every 30 seconds if there are pending orders
             @if (ViewBag.PendingOrders > 0 || ViewBag.ProcessingOrders > 0)
             {
-                        <text>
-                        setInterval(function() {
-                            location.reload();
-                        }, 30000);
-                        </text>
+                    <text>
+                    setInterval(function() {
+                        location.reload();
+                    }, 30000);
+                    </text>
             }
 
-            // Initialize DataTable with proper configuration
-            $('#ordersTable').DataTable({
+            // Initialize DataTable
+            const dataTable = $('#ordersTable').DataTable({
                 "pageLength": 25,
                 "order": [[1, 'desc']],
                 "language": {
@@ -1004,20 +1007,65 @@
                     "infoFiltered": "(filtered from _MAX_ total orders)",
                     "zeroRecords": "No matching orders found"
                 },
-                "dom": '<"top"f>rt<"bottom"lip><"clear">',
                 "columnDefs": [
-                    { "orderable": false, "targets": [0, 8, 9] }
+                    {
+                        "orderable": false,
+                        "targets": [0@(!ViewBag.ShowDeleted ? ", 8, 9" : ", 8")]
+                    }
                 ]
             });
 
-            // Date range picker validation
-            $('#startDate, #endDate').change(function() {
-                const startDate = $('#startDate').val();
-                const endDate = $('#endDate').val();
+            // Handle checkbox changes with DataTable
+            dataTable.on('draw', function() {
+                updateSelectionState();
+            });
 
-                if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-                    showAlert('End date cannot be earlier than start date', 'warning');
-                    $(this).val('');
+            // Update bulk action dropdown based on view mode
+            $('#bulkActionSelect').change(function() {
+                $('#applyBulkActionBtn').prop('disabled', !$(this).val());
+            });
+
+            // Keyboard shortcuts
+            $(document).keydown(function(e) {
+                // Ctrl + A to select all
+                if (e.ctrlKey && e.key === 'a') {
+                    e.preventDefault();
+                    $('#selectAll').click();
+                }
+
+                // Escape to clear selection
+                if (e.key === 'Escape') {
+                    $('#clearSelectionBtn').click();
+                }
+
+                // Delete key to move to trash (when not showing deleted orders)
+                if (e.key === 'Delete' && '@ViewBag.ShowDeleted' !== 'True') {
+                    e.preventDefault();
+                    if (selectedOrders.length > 0) {
+                        submitBulkAction('soft-delete');
+                    }
+                }
+            });
+
+            // Show/hide columns based on screen size
+            function adjustTableColumns() {
+                const width = $(window).width();
+                const columns = dataTable.columns([4, 6, 7]);
+                if (width < 768) {
+                    columns.visible(false);
+                } else {
+                    columns.visible(true);
+                }
+            }
+
+            $(window).resize(adjustTableColumns);
+            adjustTableColumns();
+
+            // Show loading indicator on form submissions
+            $(document).on('submit', 'form', function() {
+                const $btn = $(this).find('button[type="submit"]');
+                if ($btn.length) {
+                    $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
                 }
             });
 
@@ -1055,92 +1103,12 @@
                     </text>
             }
 
-            // Update bulk action dropdown based on view mode
-            $('#bulkActionSelect').change(function() {
-                $('#applyBulkActionBtn').prop('disabled', !$(this).val());
-            });
-
-            // Keyboard shortcuts
-            $(document).keydown(function(e) {
-                // Ctrl + A to select all
-                if (e.ctrlKey && e.key === 'a') {
-                    e.preventDefault();
-                    $('#selectAll').click();
-                }
-
-                // Escape to clear selection
-                if (e.key === 'Escape') {
-                    $('#clearSelectionBtn').click();
-                }
-
-                // Delete key to move to trash (when not showing deleted orders)
-                if (e.key === 'Delete' && '@ViewBag.ShowDeleted' !== 'True') {
-                    e.preventDefault();
-                    if (selectedOrders.length > 0) {
-                        submitBulkAction('soft-delete');
-                    }
-                }
-            });
-
-            // Show/hide columns based on screen size
-            function adjustTableColumns() {
-                const width = $(window).width();
-                if (width < 768) {
-                    $('#ordersTable').DataTable().columns([4, 6, 7]).visible(false);
-                } else {
-                    $('#ordersTable').DataTable().columns([4, 6, 7]).visible(true);
-                }
-            }
-
-            $(window).resize(adjustTableColumns);
-            adjustTableColumns();
-
-            // Show loading indicator on form submissions
-            $('form').on('submit', function() {
-                const $btn = $(this).find('button[type="submit"]');
-                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
-            });
-
-            // Handle bulk permanent delete form submission
-            $('#bulkDeleteForm').on('submit', function(e) {
-                if (selectedOrders.length === 0) {
-                    e.preventDefault();
-                    showAlert('Please select at least one order', 'warning');
-                    return;
-                }
-
-                $('#deleteOrderIds').val(selectedOrders.join(','));
-
-                if (!confirm(`Permanently delete ${selectedOrders.length} selected order(s)? This action cannot be undone!`)) {
-                    e.preventDefault();
-                    return false;
-                }
-                return true;
-            });
-
-            // Handle bulk restore form submission
-            $('#bulkRestoreForm').on('submit', function(e) {
-                if (selectedOrders.length === 0) {
-                    e.preventDefault();
-                    showAlert('Please select at least one order', 'warning');
-                    return;
-                }
-
-                $('#restoreOrderIds').val(selectedOrders.join(','));
-
-                if (!confirm(`Restore ${selectedOrders.length} selected order(s)?`)) {
-                    e.preventDefault();
-                    return false;
-                }
-                return true;
-            });
+            // Initialize selection state
+            updateSelectionState();
         });
-           
-    }
-
     </script>
-
 }
+
 @functions {
     private string GetStatusBadgeColor(string status)
     {
