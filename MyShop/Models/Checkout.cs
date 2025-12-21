@@ -37,7 +37,8 @@ namespace MyShop.Models
         [Required]
         [Display(Name = "Postal Code")]
         public string PostalCode { get; set; }
-
+        [DataType(DataType.Currency)]
+        
         [Required]
         [Display(Name = "Country")]
         public string Country { get; set; } = "South Africa";
@@ -75,6 +76,7 @@ namespace MyShop.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal Shipping { get; set; }
 
+        [DataType(DataType.Currency)]
         [Column(TypeName = "decimal(18,2)")]
         public decimal Total { get; set; }
 

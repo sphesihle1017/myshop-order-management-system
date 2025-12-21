@@ -205,55 +205,35 @@
         </div>
         <div class="card-body">
             <div class="d-flex flex-wrap gap-2 mb-3">
-                <!-- Bulk Action Forms -->
-                <form method="post" asp-action="BulkAction" id="bulkProcessingForm" class="d-inline">
-                    <input type="hidden" name="action" value="mark-processing">
-                    <button type="submit" class="btn btn-info btn-sm" id="processSelectedBtn" disabled>
-                        <i class="fas fa-cogs"></i> Process Selected
-                    </button>
-                </form>
+                <!-- Bulk Action Buttons -->
+                <button type="button" class="btn btn-info btn-sm" id="processSelectedBtn" disabled>
+                    <i class="fas fa-cogs"></i> Process Selected
+                </button>
 
-                <form method="post" asp-action="BulkAction" id="bulkShippedForm" class="d-inline">
-                    <input type="hidden" name="action" value="mark-shipped">
-                    <button type="submit" class="btn btn-primary btn-sm" id="shipSelectedBtn" disabled>
-                        <i class="fas fa-shipping-fast"></i> Ship Selected
-                    </button>
-                </form>
+                <button type="button" class="btn btn-primary btn-sm" id="shipSelectedBtn" disabled>
+                    <i class="fas fa-shipping-fast"></i> Ship Selected
+                </button>
 
-                <form method="post" asp-action="BulkAction" id="bulkDeliveredForm" class="d-inline">
-                    <input type="hidden" name="action" value="mark-delivered">
-                    <button type="submit" class="btn btn-success btn-sm" id="deliverSelectedBtn" disabled>
-                        <i class="fas fa-truck"></i> Deliver Selected
-                    </button>
-                </form>
+                <button type="button" class="btn btn-success btn-sm" id="deliverSelectedBtn" disabled>
+                    <i class="fas fa-truck"></i> Deliver Selected
+                </button>
 
-                <form method="post" asp-action="BulkAction" id="bulkPaidForm" class="d-inline">
-                    <input type="hidden" name="action" value="mark-paid">
-                    <button type="submit" class="btn btn-success btn-sm" id="paySelectedBtn" disabled>
-                        <i class="fas fa-check-circle"></i> Mark Paid
-                    </button>
-                </form>
+                <button type="button" class="btn btn-success btn-sm" id="paySelectedBtn" disabled>
+                    <i class="fas fa-check-circle"></i> Mark Paid
+                </button>
 
-                <form method="post" asp-action="BulkAction" id="bulkAssignForm" class="d-inline">
-                    <input type="hidden" name="action" value="assign-me">
-                    <button type="submit" class="btn btn-warning btn-sm" id="assignSelectedBtn" disabled>
-                        <i class="fas fa-user-check"></i> Assign to Me
-                    </button>
-                </form>
+                <button type="button" class="btn btn-warning btn-sm" id="assignSelectedBtn" disabled>
+                    <i class="fas fa-user-check"></i> Assign to Me
+                </button>
 
-                <form method="post" asp-action="BulkAction" id="bulkSoftDeleteForm" class="d-inline">
-                    <input type="hidden" name="action" value="soft-delete">
-                    <button type="submit" class="btn btn-danger btn-sm" id="softDeleteSelectedBtn" disabled>
-                        <i class="fas fa-trash"></i> Move to Trash
-                    </button>
-                </form>
+                <button type="button" class="btn btn-danger btn-sm" id="softDeleteSelectedBtn" disabled>
+                    <i class="fas fa-trash"></i> Move to Trash
+                </button>
 
-                <form method="post" asp-action="BulkRestore" id="bulkRestoreForm" class="d-inline @(ViewBag.ShowDeleted ? "" : "d-none")">
-                    <input type="hidden" name="orderIds" id="restoreOrderIds">
-                    <button type="submit" class="btn btn-success btn-sm" id="restoreSelectedBtn" disabled>
-                        <i class="fas fa-undo"></i> Restore Selected
-                    </button>
-                </form>
+                <button type="button" class="btn btn-success btn-sm" id="restoreSelectedBtn" disabled
+                        style="@(!ViewBag.ShowDeleted ? "display: none;" : "")">
+                    <i class="fas fa-undo"></i> Restore Selected
+                </button>
 
                 <button type="button" class="btn btn-secondary btn-sm" id="exportSelectedBtn" disabled>
                     <i class="fas fa-download"></i> Export Selected
@@ -389,7 +369,6 @@
                                         {
                                             <br>
                                             <small class="text-success">Discount: @order.Discount.ToString("C", new System.Globalization.CultureInfo("en-ZA"))</small>
-
                                         }
                                     </td>
                                     <td>
@@ -436,6 +415,7 @@
                                                 @if (order.OrderStatus == "Pending" || order.OrderStatus == "On Hold")
                                                 {
                                                     <form method="post" asp-action="Edit" asp-route-id="@order.OrderId" class="d-inline">
+                                                        @Html.AntiForgeryToken()
                                                         <input type="hidden" name="actionType" value="mark-processing">
                                                         <button type="submit" class="btn btn-info btn-sm" title="Start Processing">
                                                             <i class="fas fa-cogs"></i> Process
@@ -445,6 +425,7 @@
                                                 @if (order.OrderStatus == "Processing")
                                                 {
                                                     <form method="post" asp-action="Edit" asp-route-id="@order.OrderId" class="d-inline">
+                                                        @Html.AntiForgeryToken()
                                                         <input type="hidden" name="actionType" value="mark-shipped">
                                                         <button type="submit" class="btn btn-primary btn-sm" title="Mark as Shipped">
                                                             <i class="fas fa-shipping-fast"></i> Ship
@@ -454,6 +435,7 @@
                                                 @if (order.OrderStatus == "Shipped")
                                                 {
                                                     <form method="post" asp-action="Edit" asp-route-id="@order.OrderId" class="d-inline">
+                                                        @Html.AntiForgeryToken()
                                                         <input type="hidden" name="actionType" value="mark-delivered">
                                                         <button type="submit" class="btn btn-success btn-sm" title="Mark as Delivered">
                                                             <i class="fas fa-truck"></i> Deliver
@@ -463,6 +445,7 @@
                                                 @if (order.PaymentStatus != "Paid")
                                                 {
                                                     <form method="post" asp-action="Edit" asp-route-id="@order.OrderId" class="d-inline">
+                                                        @Html.AntiForgeryToken()
                                                         <input type="hidden" name="actionType" value="mark-paid">
                                                         <button type="submit" class="btn btn-success btn-sm" title="Mark as Paid">
                                                             <i class="fas fa-check-circle"></i> Paid
@@ -472,6 +455,7 @@
                                                 @if (order.Priority != "High" && order.OrderStatus != "Cancelled" && order.OrderStatus != "Delivered")
                                                 {
                                                     <form method="post" asp-action="Edit" asp-route-id="@order.OrderId" class="d-inline">
+                                                        @Html.AntiForgeryToken()
                                                         <input type="hidden" name="actionType" value="set-high-priority">
                                                         <button type="submit" class="btn btn-warning btn-sm" title="Set High Priority">
                                                             <i class="fas fa-exclamation"></i>
@@ -509,6 +493,7 @@
                                                     {
                                                         <form method="post" asp-action="Edit" asp-route-id="@order.OrderId"
                                                               style="display: inline;">
+                                                            @Html.AntiForgeryToken()
                                                             <input type="hidden" name="actionType" value="send-tracking">
                                                             <button type="submit" class="dropdown-item">
                                                                 <i class="fas fa-envelope text-warning"></i> Send Tracking
@@ -517,6 +502,7 @@
                                                     }
                                                     <form method="post" asp-action="Edit" asp-route-id="@order.OrderId"
                                                           style="display: inline;">
+                                                        @Html.AntiForgeryToken()
                                                         <input type="hidden" name="actionType" value="generate-invoice">
                                                         <button type="submit" class="dropdown-item">
                                                             <i class="fas fa-file-invoice-dollar text-primary"></i> Generate Invoice
@@ -526,6 +512,7 @@
                                                     {
                                                         <form method="post" asp-action="Edit" asp-route-id="@order.OrderId"
                                                               style="display: inline;">
+                                                            @Html.AntiForgeryToken()
                                                             <input type="hidden" name="actionType" value="put-on-hold">
                                                             <button type="submit" class="dropdown-item">
                                                                 <i class="fas fa-pause text-warning"></i> Put on Hold
@@ -652,130 +639,273 @@
 
 @section Scripts {
     <script>
-            $(document).ready(function() {
-                // Initialize tooltips
-                $('[data-toggle="tooltip"]').tooltip();
+        $(document).ready(function() {
+            // Initialize tooltips
+            $('[data-toggle="tooltip"]').tooltip();
 
-                // Store selected order IDs
-                let selectedOrders = [];
-                let deleteFormUrl = '';
-                let isPermanentDelete = false;
+            // Store selected order IDs
+            let selectedOrders = [];
+            let deleteFormUrl = '';
+            let isPermanentDelete = false;
 
-                // Select all checkboxes
-                $('#selectAll').change(function() {
-                    const isChecked = this.checked;
-                    $('.order-checkbox').prop('checked', isChecked);
-                    updateSelectionState();
+            // Select all checkboxes
+            $('#selectAll').change(function() {
+                const isChecked = this.checked;
+                $('.order-checkbox').prop('checked', isChecked);
+                updateSelectionState();
+            });
+
+            // Update selection state when individual checkboxes change
+            $(document).on('change', '.order-checkbox', function() {
+                updateSelectionState();
+            });
+
+            // Update selection counter and button states
+            function updateSelectionState() {
+                selectedOrders = [];
+                $('.order-checkbox:checked').each(function() {
+                    selectedOrders.push($(this).val());
                 });
 
-                // Update selection state when individual checkboxes change
-                $('.order-checkbox').change(function() {
-                    updateSelectionState();
-                });
+                const selectedCount = selectedOrders.length;
+                const isAnySelected = selectedCount > 0;
+                const isAllSelected = selectedCount === $('.order-checkbox').length;
 
-                // Update selection counter and button states
-                function updateSelectionState() {
-                    selectedOrders = [];
-                    $('.order-checkbox:checked').each(function() {
-                        selectedOrders.push($(this).val());
-                    });
+                // Update select all checkbox
+                $('#selectAll').prop('checked', isAllSelected && $('.order-checkbox').length > 0);
 
-                    const selectedCount = selectedOrders.length;
-                    const isAnySelected = selectedCount > 0;
-                    const isAllSelected = selectedCount === $('.order-checkbox').length;
-
-                    // Update select all checkbox
-                    $('#selectAll').prop('checked', isAllSelected);
-
-                    // Update counter
-                    if (isAnySelected) {
-                        $('#selectionCounter').removeClass('d-none');
-                        $('#selectedCount').text(selectedCount);
-                    } else {
-                        $('#selectionCounter').addClass('d-none');
-                    }
-
-                    // Enable/disable buttons
-                    const buttons = [
-                        '#processSelectedBtn', '#shipSelectedBtn', '#deliverSelectedBtn',
-                        '#paySelectedBtn', '#assignSelectedBtn', '#exportSelectedBtn',
-                        '#clearSelectionBtn', '#applyBulkActionBtn'
-                    ];
-
-                    buttons.forEach(btn => {
-                        $(btn).prop('disabled', !isAnySelected);
-                    });
-
-                    // Show/hide soft delete/restore buttons based on view mode
-                    if ('@ViewBag.ShowDeleted' === 'True') {
-                        $('#softDeleteSelectedBtn').hide();
-                        $('#restoreSelectedBtn').show().prop('disabled', !isAnySelected);
-                    } else {
-                        $('#softDeleteSelectedBtn').show().prop('disabled', !isAnySelected);
-                        $('#restoreSelectedBtn').hide();
-                    }
-
-                    // Show order count
-                    $('#orderCount').text(`Showing ${$('.order-checkbox').length} orders, ${selectedCount} selected`);
+                // Update counter
+                if (isAnySelected) {
+                    $('#selectionCounter').removeClass('d-none');
+                    $('#selectedCount').text(selectedCount);
+                } else {
+                    $('#selectionCounter').addClass('d-none');
                 }
 
+                // Enable/disable bulk action buttons
+                const buttons = [
+                    '#processSelectedBtn', '#shipSelectedBtn', '#deliverSelectedBtn',
+                    '#paySelectedBtn', '#assignSelectedBtn', '#softDeleteSelectedBtn',
+                    '#exportSelectedBtn', '#clearSelectionBtn', '#applyBulkActionBtn'
+                ];
 
-                // Clear selection
-                $('#clearSelectionBtn').click(function() {
-                    $('.order-checkbox').prop('checked', false);
-                    $('#selectAll').prop('checked', false);
-                    updateSelectionState();
+                buttons.forEach(btn => {
+                    $(btn).prop('disabled', !isAnySelected);
                 });
 
-                // Bulk action handlers
-                function submitBulkAction(action) {
-                    if (selectedOrders.length === 0) {
-                        showAlert('Please select at least one order', 'warning');
+                // Enable/disable restore button separately for trash view
+                if ('@ViewBag.ShowDeleted' === 'True') {
+                    $('#restoreSelectedBtn').prop('disabled', !isAnySelected);
+                }
+
+                // Show order count
+                const totalOrders = $('.order-checkbox').length;
+                $('#orderCount').text(`Showing ${totalOrders} orders, ${selectedCount} selected`);
+            }
+
+            // Clear selection
+            $('#clearSelectionBtn').click(function() {
+                $('.order-checkbox').prop('checked', false);
+                $('#selectAll').prop('checked', false);
+                updateSelectionState();
+            });
+
+            // Generic bulk action handler
+            function submitBulkAction(action) {
+                if (selectedOrders.length === 0) {
+                    showAlert('Please select at least one order', 'warning');
+                    return;
+                }
+
+                let actionText = '';
+                let confirmMessage = '';
+
+                switch (action) {
+                    case 'soft-delete':
+                        actionText = 'move to trash';
+                        confirmMessage = `Move ${selectedOrders.length} selected order(s) to trash?`;
+                        break;
+                    case 'restore':
+                        actionText = 'restore';
+                        confirmMessage = `Restore ${selectedOrders.length} selected order(s)?`;
+                        break;
+                    case 'permanent-delete':
+                        actionText = 'permanently delete';
+                        confirmMessage = `Permanently delete ${selectedOrders.length} selected order(s)? This action cannot be undone!`;
+                        break;
+                    case 'export-selected':
+                        exportSelectedOrders(selectedOrders);
                         return;
+                    case 'mark-processing':
+                        actionText = 'mark as processing';
+                        confirmMessage = `Mark ${selectedOrders.length} selected order(s) as Processing?`;
+                        break;
+                    case 'mark-shipped':
+                        actionText = 'mark as shipped';
+                        confirmMessage = `Mark ${selectedOrders.length} selected order(s) as Shipped?`;
+                        break;
+                    case 'mark-delivered':
+                        actionText = 'mark as delivered';
+                        confirmMessage = `Mark ${selectedOrders.length} selected order(s) as Delivered?`;
+                        break;
+                    case 'mark-paid':
+                        actionText = 'mark as paid';
+                        confirmMessage = `Mark ${selectedOrders.length} selected order(s) as Paid?`;
+                        break;
+                    case 'assign-me':
+                        actionText = 'assign to me';
+                        confirmMessage = `Assign ${selectedOrders.length} selected order(s) to you?`;
+                        break;
+                    default:
+                        actionText = action;
+                        confirmMessage = `Are you sure you want to ${actionText} ${selectedOrders.length} selected order(s)?`;
+                }
+
+                if (!confirm(confirmMessage)) {
+                    return;
+                }
+
+                // Create form for bulk action
+                const form = document.createElement('form');
+                form.method = 'post';
+
+                // Set correct action URL
+                if (action === 'restore') {
+                    form.action = '@Url.Action("BulkRestore")';
+                } else if (action === 'permanent-delete') {
+                    form.action = '@Url.Action("BulkPermanentDelete")';
+                } else {
+                    form.action = '@Url.Action("BulkAction")';
+                }
+
+                // Add anti-forgery token
+                const token = $('input[name="__RequestVerificationToken"]').val();
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = '__RequestVerificationToken';
+                tokenInput.value = token;
+                form.appendChild(tokenInput);
+
+                // Add action for BulkAction only
+                if (action !== 'restore' && action !== 'permanent-delete') {
+                    const actionInput = document.createElement('input');
+                    actionInput.type = 'hidden';
+                    actionInput.name = 'action';
+                    actionInput.value = action;
+                    form.appendChild(actionInput);
+                }
+
+                // Add order IDs
+                selectedOrders.forEach(id => {
+                    const orderIdInput = document.createElement('input');
+                    orderIdInput.type = 'hidden';
+                    orderIdInput.name = 'orderIds';
+                    orderIdInput.value = id;
+                    form.appendChild(orderIdInput);
+                });
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+
+            // Individual bulk action buttons
+            $('#processSelectedBtn').click(function(e) {
+                e.preventDefault();
+                submitBulkAction('mark-processing');
+            });
+
+            $('#shipSelectedBtn').click(function(e) {
+                e.preventDefault();
+                submitBulkAction('mark-shipped');
+            });
+
+            $('#deliverSelectedBtn').click(function(e) {
+                e.preventDefault();
+                submitBulkAction('mark-delivered');
+            });
+
+            $('#paySelectedBtn').click(function(e) {
+                e.preventDefault();
+                submitBulkAction('mark-paid');
+            });
+
+            $('#assignSelectedBtn').click(function(e) {
+                e.preventDefault();
+                submitBulkAction('assign-me');
+            });
+
+            $('#softDeleteSelectedBtn').click(function(e) {
+                e.preventDefault();
+                submitBulkAction('soft-delete');
+            });
+
+            $('#restoreSelectedBtn').click(function(e) {
+                e.preventDefault();
+                submitBulkAction('restore');
+            });
+
+            $('#exportSelectedBtn').click(function() {
+                exportSelectedOrders(selectedOrders);
+            });
+
+            // Bulk action dropdown
+            $('#applyBulkActionBtn').click(function() {
+                const action = $('#bulkActionSelect').val();
+                if (action) {
+                    submitBulkAction(action);
+                }
+            });
+
+            // Quick action forms (individual order actions)
+            $(document).on('submit', 'form[action*="Edit"]', function(e) {
+                const actionType = $(this).find('input[name="actionType"]').val();
+                const orderId = $(this).attr('action').split('/').pop();
+
+                if (actionType && actionType !== 'save') {
+                    const actionText = actionType.replace('mark-', '').replace('set-', '').replace('put-', '').replace('-', ' ');
+                    if (!confirm(`Are you sure you want to ${actionText} order #${orderId}?`)) {
+                        e.preventDefault();
+                        return false;
                     }
+                }
+                return true;
+            });
 
-                    let actionText = '';
-                    let confirmMessage = '';
+            // Handle delete confirmation (individual orders)
+            $(document).on('click', 'a[href*="Delete"]', function(e) {
+                e.preventDefault();
+                const url = $(this).attr('href');
+                const orderId = url.split('/').pop();
 
-                    switch (action) {
-                        case 'soft-delete':
-                            actionText = 'move to trash';
-                            confirmMessage = `Move ${selectedOrders.length} selected order(s) to trash?`;
-                            break;
-                        case 'restore':
-                            actionText = 'restore';
-                            confirmMessage = `Restore ${selectedOrders.length} selected order(s)?`;
-                            break;
-                        case 'permanent-delete':
-                            actionText = 'permanently delete';
-                            confirmMessage = `Permanently delete ${selectedOrders.length} selected order(s)? This action cannot be undone!`;
-                            break;
-                        case 'export-selected':
-                            exportSelectedOrders(selectedOrders);
-                            return;
-                        default:
-                            actionText = action.replace('mark-', '').replace('-', ' ');
-                            confirmMessage = `Are you sure you want to ${actionText} ${selectedOrders.length} selected order(s)?`;
-                    }
+                // Check if it's a permanent delete or soft delete
+                isPermanentDelete = url.includes('PermanentDelete');
 
-                    if (!confirm(confirmMessage)) {
-                        return;
-                    }
+                if (isPermanentDelete) {
+                    $('#deleteModalMessage').html(`
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Warning: Permanent Delete</strong><br>
+                            This will permanently delete order #${orderId} from the database.<br>
+                            <strong>This action cannot be undone!</strong>
+                        </div>
+                        <p>Are you absolutely sure you want to permanently delete this order?</p>
+                    `);
+                } else {
+                    $('#deleteModalMessage').html(`Move order #${orderId} to trash? You can restore it later from the trash.`);
+                }
 
-                    // Create form for bulk action
+                deleteFormUrl = url;
+                $('#confirmDeleteModal').modal('show');
+            });
+
+            // Confirm delete button for individual orders
+            $('#confirmDeleteBtn').click(function() {
+                if (isPermanentDelete) {
+                    // For permanent delete, we need to submit a form with anti-forgery token
                     const form = document.createElement('form');
                     form.method = 'post';
+                    form.action = deleteFormUrl;
 
-                    // Set correct action URL
-                    if (action === 'restore') {
-                        form.action = '@Url.Action("BulkRestore")';
-                    } else if (action === 'permanent-delete') {
-                        form.action = '@Url.Action("BulkPermanentDelete")';
-                    } else {
-                        form.action = '@Url.Action("BulkAction")';
-                    }
-
-                    // Add anti-forgery token
                     const token = $('input[name="__RequestVerificationToken"]').val();
                     const tokenInput = document.createElement('input');
                     tokenInput.type = 'hidden';
@@ -783,364 +913,202 @@
                     tokenInput.value = token;
                     form.appendChild(tokenInput);
 
-                    // Add action for BulkAction only
-                    if (action !== 'restore' && action !== 'permanent-delete') {
-                        const actionInput = document.createElement('input');
-                        actionInput.type = 'hidden';
-                        actionInput.name = 'action';
-                        actionInput.value = action;
-                        form.appendChild(actionInput);
-                    }
-
-                    // Add order IDs
-                    selectedOrders.forEach(id => {
-                        const orderIdInput = document.createElement('input');
-                        orderIdInput.type = 'hidden';
-                        orderIdInput.name = 'orderIds';
-                        orderIdInput.value = id;
-                        form.appendChild(orderIdInput);
-                    });
-
                     document.body.appendChild(form);
                     form.submit();
+                } else {
+                    // For soft delete, just redirect
+                    window.location.href = deleteFormUrl;
                 }
 
-                // Individual bulk action buttons
-                $('#processSelectedBtn').click(function(e) {
-                    e.preventDefault();
-                    submitBulkAction('mark-processing');
-                });
-
-                $('#shipSelectedBtn').click(function(e) {
-                    e.preventDefault();
-                    submitBulkAction('mark-shipped');
-                });
-
-                $('#deliverSelectedBtn').click(function(e) {
-                    e.preventDefault();
-                    submitBulkAction('mark-delivered');
-                });
-
-                $('#paySelectedBtn').click(function(e) {
-                    e.preventDefault();
-                    submitBulkAction('mark-paid');
-                });
-
-                $('#assignSelectedBtn').click(function(e) {
-                    e.preventDefault();
-                    submitBulkAction('assign-me');
-                });
-
-                $('#softDeleteSelectedBtn').click(function(e) {
-                    e.preventDefault();
-                    submitBulkAction('soft-delete');
-                });
-
-                $('#restoreSelectedBtn').click(function(e) {
-                    e.preventDefault();
-                    submitBulkAction('restore');
-                });
-
-                $('#exportSelectedBtn').click(function() {
-                    exportSelectedOrders(selectedOrders);
-                });
-
-                // Bulk action dropdown
-                $('#applyBulkActionBtn').click(function() {
-                    const action = $('#bulkActionSelect').val();
-                    if (action) {
-                        submitBulkAction(action);
-                    }
-                });
-
-                // Quick action forms
-                $('form[action*="Edit"]').on('submit', function(e) {
-                    const actionType = $(this).find('input[name="actionType"]').val();
-                    const orderId = $(this).attr('action').split('/').pop();
-
-                    if (actionType && actionType !== 'save') {
-                        const actionText = actionType.replace('mark-', '').replace('set-', '').replace('put-', '').replace('-', ' ');
-                        if (!confirm(`Are you sure you want to ${actionText} order #${orderId}?`)) {
-                            e.preventDefault();
-                            return false;
-                        }
-                    }
-                    return true;
-                });
-
-                // Handle delete confirmation
-                $('a[href*="Delete"]').click(function(e) {
-                    e.preventDefault();
-                    const url = $(this).attr('href');
-                    const orderId = url.split('/').pop();
-
-                    // Check if it's a permanent delete or soft delete
-                    isPermanentDelete = url.includes('PermanentDelete');
-
-                    if (isPermanentDelete) {
-                        $('#deleteModalMessage').html(`
-                            <div class="alert alert-danger">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                <strong>Warning: Permanent Delete</strong><br>
-                                This will permanently delete order #${orderId} from the database.<br>
-                                <strong>This action cannot be undone!</strong>
-                            </div>
-                            <p>Are you absolutely sure you want to permanently delete this order?</p>
-                        `);
-                    } else {
-                        $('#deleteModalMessage').text(`Move order #${orderId} to trash? You can restore it later from the trash.`);
-                    }
-
-                    deleteFormUrl = url;
-                    $('#confirmDeleteModal').modal('show');
-                });
-
-                // Confirm delete button
-                $('#confirmDeleteBtn').click(function() {
-                    if (isPermanentDelete) {
-                        // For permanent delete, we need to submit a form with anti-forgery token
-                        const form = document.createElement('form');
-                        form.method = 'post';
-                        form.action = deleteFormUrl;
-
-                        const token = $('input[name="__RequestVerificationToken"]').val();
-                        const tokenInput = document.createElement('input');
-                        tokenInput.type = 'hidden';
-                        tokenInput.name = '__RequestVerificationToken';
-                        tokenInput.value = token;
-                        form.appendChild(tokenInput);
-
-                        document.body.appendChild(form);
-                        form.submit();
-                    } else {
-                        // For soft delete, just redirect
-                        window.location.href = deleteFormUrl;
-                    }
-
-                    $('#confirmDeleteModal').modal('hide');
-                });
-
-                // Handle restore forms
-                $('form[action*="Restore"]').on('submit', function(e) {
-                    const orderId = $(this).attr('action').split('/').pop();
-                    if (!confirm(`Restore order #${orderId}?`)) {
-                        e.preventDefault();
-                        return false;
-                    }
-                    return true;
-                });
-
-                // Export selected orders
-                function exportSelectedOrders(orderIds) {
-                    const url = '@Url.Action("Export")' + '?format=csv&orderIds=' + orderIds.join(',');
-                    window.open(url, '_blank');
-                    showAlert(`Exporting ${orderIds.length} orders...`, 'info');
-                }
-
-                // Tracking modal
-                $(document).on('click', '.tracking-link', function(e) {
-                    e.preventDefault();
-                    const trackingNumber = $(this).data('tracking');
-                    const carrier = $(this).data('carrier') || 'Unknown Carrier';
-
-                    $('#trackingNumber').text(trackingNumber);
-                    $('#trackingCarrier').text(carrier);
-
-                    // Generate tracking URL based on carrier
-                    let trackingUrl = '';
-                    if (carrier.toLowerCase().includes('dhl')) {
-                        trackingUrl = `https://www.dhl.com/en/express/tracking.html?AWB=${trackingNumber}`;
-                    } else if (carrier.toLowerCase().includes('fedex')) {
-                        trackingUrl = `https://www.fedex.com/fedextrack/?trknbr=${trackingNumber}`;
-                    } else if (carrier.toLowerCase().includes('ups')) {
-                        trackingUrl = `https://www.ups.com/track?tracknum=${trackingNumber}`;
-                    } else if (carrier.toLowerCase().includes('courier guy')) {
-                        trackingUrl = `https://thecourierguy.co.za/track-your-parcel/?tracking_number=${trackingNumber}`;
-                    } else if (carrier.toLowerCase().includes('fastway')) {
-                        trackingUrl = `https://www.fastway.co.za/tools/track`;
-                    } else {
-                        trackingUrl = `#`;
-                    }
-
-                    $('#trackingUrl').val(trackingUrl);
-                    $('#openTrackingBtn').off('click').on('click', function() {
-                        if (trackingUrl !== '#') {
-                            window.open(trackingUrl, '_blank');
-                        }
-                    });
-
-                    $('#trackingModal').modal('show');
-                });
-
-                // Clear filters
-                $('#clearFiltersBtn').click(function() {
-                    window.location.href = '@Url.Action("Index")';
-                });
-
-                // Refresh page
-                $('#refreshBtn').click(function() {
-                    location.reload();
-                });
-
-                // Auto-refresh every 30 seconds if there are pending orders
-                @if (ViewBag.PendingOrders > 0 || ViewBag.ProcessingOrders > 0)
-                {
-                                <text>
-                                setInterval(function() {
-                                    location.reload();
-                                }, 30000);
-                                </text>
-                }
-
-                // Initialize DataTable with proper configuration
-                $('#ordersTable').DataTable({
-                    "pageLength": 25,
-                    "order": [[1, 'desc']],
-                    "language": {
-                        "search": "Filter:",
-                        "lengthMenu": "Show _MENU_ orders",
-                        "info": "Showing _START_ to _END_ of _TOTAL_ orders",
-                        "infoEmpty": "Showing 0 to 0 of 0 orders",
-                        "infoFiltered": "(filtered from _MAX_ total orders)",
-                        "zeroRecords": "No matching orders found"
-                    },
-                    "dom": '<"top"f>rt<"bottom"lip><"clear">',
-                    "columnDefs": [
-                        { "orderable": false, "targets": [0, 8, 9] }
-                    ]
-                });
-
-                // Date range picker validation
-                $('#startDate, #endDate').change(function() {
-                    const startDate = $('#startDate').val();
-                    const endDate = $('#endDate').val();
-
-                    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-                        showAlert('End date cannot be earlier than start date', 'warning');
-                        $(this).val('');
-                    }
-                });
-
-                // Show alerts
-                function showAlert(message, type = 'success') {
-                    const alertClass = type === 'success' ? 'alert-success' :
-                                     type === 'warning' ? 'alert-warning' :
-                                     type === 'error' ? 'alert-danger' : 'alert-info';
-
-                    const alertHtml = `
-                        <div class="alert ${alertClass} alert-dismissible fade show fixed-top m-3" role="alert">
-                            <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-exclamation-circle'} mr-2"></i>
-                            ${message}
-                            <button type="button" class="close" data-dismiss="alert">
-                                <span>&times;</span>
-                            </button>
-                        </div>
-                    `;
-
-                    $('body').append(alertHtml);
-                    setTimeout(() => $('.alert').alert('close'), 5000);
-                }
-
-                // Check for success/error messages from TempData
-                @if (TempData["SuccessMessage"] != null)
-                {
-                            <text>
-                            showAlert('@TempData["SuccessMessage"]', 'success');
-                            </text>
-                }
-                @if (TempData["ErrorMessage"] != null)
-                {
-                            <text>
-                            showAlert('@TempData["ErrorMessage"]', 'error');
-                            </text>
-                }
-
-                // Update bulk action dropdown based on view mode
-                $('#bulkActionSelect').change(function() {
-                    $('#applyBulkActionBtn').prop('disabled', !$(this).val());
-                });
-
-                // Keyboard shortcuts
-                $(document).keydown(function(e) {
-                    // Ctrl + A to select all
-                    if (e.ctrlKey && e.key === 'a') {
-                        e.preventDefault();
-                        $('#selectAll').click();
-                    }
-
-                    // Escape to clear selection
-                    if (e.key === 'Escape') {
-                        $('#clearSelectionBtn').click();
-                    }
-
-                    // Delete key to move to trash (when not showing deleted orders)
-                    if (e.key === 'Delete' && '@ViewBag.ShowDeleted' !== 'True') {
-                        e.preventDefault();
-                        if (selectedOrders.length > 0) {
-                            submitBulkAction('soft-delete');
-                        }
-                    }
-                });
-
-                // Show/hide columns based on screen size
-                function adjustTableColumns() {
-                    const width = $(window).width();
-                    if (width < 768) {
-                        $('#ordersTable').DataTable().columns([4, 6, 7]).visible(false);
-                    } else {
-                        $('#ordersTable').DataTable().columns([4, 6, 7]).visible(true);
-                    }
-                }
-
-                $(window).resize(adjustTableColumns);
-                adjustTableColumns();
-
-                // Show loading indicator on form submissions
-                $('form').on('submit', function() {
-                    const $btn = $(this).find('button[type="submit"]');
-                    $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
-                });
-
-                // Handle bulk permanent delete form submission
-                $('#bulkDeleteForm').on('submit', function(e) {
-                    if (selectedOrders.length === 0) {
-                        e.preventDefault();
-                        showAlert('Please select at least one order', 'warning');
-                        return;
-                    }
-
-                    $('#deleteOrderIds').val(selectedOrders.join(','));
-
-                    if (!confirm(`Permanently delete ${selectedOrders.length} selected order(s)? This action cannot be undone!`)) {
-                        e.preventDefault();
-                        return false;
-                    }
-                    return true;
-                });
-
-                // Handle bulk restore form submission
-                $('#bulkRestoreForm').on('submit', function(e) {
-                    if (selectedOrders.length === 0) {
-                        e.preventDefault();
-                        showAlert('Please select at least one order', 'warning');
-                        return;
-                    }
-
-                    $('#restoreOrderIds').val(selectedOrders.join(','));
-
-                    if (!confirm(`Restore ${selectedOrders.length} selected order(s)?`)) {
-                        e.preventDefault();
-                        return false;
-                    }
-                    return true;
-                });
+                $('#confirmDeleteModal').modal('hide');
             });
 
-        }
+            // Handle restore forms (individual orders)
+            $(document).on('submit', 'form[action*="Restore"]', function(e) {
+                const orderId = $(this).attr('action').split('/').pop();
+                if (!confirm(`Restore order #${orderId}?`)) {
+                    e.preventDefault();
+                    return false;
+                }
+                return true;
+            });
 
+            // Export selected orders
+            function exportSelectedOrders(orderIds) {
+                const url = '@Url.Action("Export")' + '?format=csv&orderIds=' + orderIds.join(',');
+                window.open(url, '_blank');
+                showAlert(`Exporting ${orderIds.length} orders...`, 'info');
+            }
+
+            // Tracking modal
+            $(document).on('click', '.tracking-link', function(e) {
+                e.preventDefault();
+                const trackingNumber = $(this).data('tracking');
+                const carrier = $(this).data('carrier') || 'Unknown Carrier';
+
+                $('#trackingNumber').text(trackingNumber);
+                $('#trackingCarrier').text(carrier);
+
+                // Generate tracking URL based on carrier
+                let trackingUrl = '';
+                if (carrier.toLowerCase().includes('dhl')) {
+                    trackingUrl = `https://www.dhl.com/en/express/tracking.html?AWB=${trackingNumber}`;
+                } else if (carrier.toLowerCase().includes('fedex')) {
+                    trackingUrl = `https://www.fedex.com/fedextrack/?trknbr=${trackingNumber}`;
+                } else if (carrier.toLowerCase().includes('ups')) {
+                    trackingUrl = `https://www.ups.com/track?tracknum=${trackingNumber}`;
+                } else if (carrier.toLowerCase().includes('courier guy')) {
+                    trackingUrl = `https://thecourierguy.co.za/track-your-parcel/?tracking_number=${trackingNumber}`;
+                } else if (carrier.toLowerCase().includes('fastway')) {
+                    trackingUrl = `https://www.fastway.co.za/tools/track`;
+                } else {
+                    trackingUrl = `#`;
+                }
+
+                $('#trackingUrl').val(trackingUrl);
+                $('#openTrackingBtn').off('click').on('click', function() {
+                    if (trackingUrl !== '#') {
+                        window.open(trackingUrl, '_blank');
+                    }
+                });
+
+                $('#trackingModal').modal('show');
+            });
+
+            // Clear filters
+            $('#clearFiltersBtn').click(function() {
+                window.location.href = '@Url.Action("Index")';
+            });
+
+            // Refresh page
+            $('#refreshBtn').click(function() {
+                location.reload();
+            });
+
+            // Auto-refresh every 30 seconds if there are pending orders
+            @if (ViewBag.PendingOrders > 0 || ViewBag.ProcessingOrders > 0)
+            {
+                    <text>
+                    setInterval(function() {
+                        location.reload();
+                    }, 30000);
+                    </text>
+            }
+
+            // Initialize DataTable
+            const dataTable = $('#ordersTable').DataTable({
+                "pageLength": 25,
+                "order": [[1, 'desc']],
+                "language": {
+                    "search": "Filter:",
+                    "lengthMenu": "Show _MENU_ orders",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ orders",
+                    "infoEmpty": "Showing 0 to 0 of 0 orders",
+                    "infoFiltered": "(filtered from _MAX_ total orders)",
+                    "zeroRecords": "No matching orders found"
+                },
+                "columnDefs": [
+                    {
+                        "orderable": false,
+                        "targets": [0@(!ViewBag.ShowDeleted ? ", 8, 9" : ", 8")]
+                    }
+                ]
+            });
+
+            // Handle checkbox changes with DataTable
+            dataTable.on('draw', function() {
+                updateSelectionState();
+            });
+
+            // Update bulk action dropdown based on view mode
+            $('#bulkActionSelect').change(function() {
+                $('#applyBulkActionBtn').prop('disabled', !$(this).val());
+            });
+
+            // Keyboard shortcuts
+            $(document).keydown(function(e) {
+                // Ctrl + A to select all
+                if (e.ctrlKey && e.key === 'a') {
+                    e.preventDefault();
+                    $('#selectAll').click();
+                }
+
+                // Escape to clear selection
+                if (e.key === 'Escape') {
+                    $('#clearSelectionBtn').click();
+                }
+
+                // Delete key to move to trash (when not showing deleted orders)
+                if (e.key === 'Delete' && '@ViewBag.ShowDeleted' !== 'True') {
+                    e.preventDefault();
+                    if (selectedOrders.length > 0) {
+                        submitBulkAction('soft-delete');
+                    }
+                }
+            });
+
+            // Show/hide columns based on screen size
+            function adjustTableColumns() {
+                const width = $(window).width();
+                const columns = dataTable.columns([4, 6, 7]);
+                if (width < 768) {
+                    columns.visible(false);
+                } else {
+                    columns.visible(true);
+                }
+            }
+
+            $(window).resize(adjustTableColumns);
+            adjustTableColumns();
+
+            // Show loading indicator on form submissions
+            $(document).on('submit', 'form', function() {
+                const $btn = $(this).find('button[type="submit"]');
+                if ($btn.length) {
+                    $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+                }
+            });
+
+            // Show alerts
+            function showAlert(message, type = 'success') {
+                const alertClass = type === 'success' ? 'alert-success' :
+                                 type === 'warning' ? 'alert-warning' :
+                                 type === 'error' ? 'alert-danger' : 'alert-info';
+
+                const alertHtml = `
+                    <div class="alert ${alertClass} alert-dismissible fade show fixed-top m-3" role="alert">
+                        <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-exclamation-circle'} mr-2"></i>
+                        ${message}
+                        <button type="button" class="close" data-dismiss="alert">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                `;
+
+                $('body').append(alertHtml);
+                setTimeout(() => $('.alert').alert('close'), 5000);
+            }
+
+            // Check for success/error messages from TempData
+            @if (TempData["SuccessMessage"] != null)
+            {
+                    <text>
+                    showAlert('@TempData["SuccessMessage"]', 'success');
+                    </text>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                    <text>
+                    showAlert('@TempData["ErrorMessage"]', 'error');
+                    </text>
+            }
+
+            // Initialize selection state
+            updateSelectionState();
+        });
     </script>
-
 }
+
 @functions {
     private string GetStatusBadgeColor(string status)
     {

@@ -2,17 +2,39 @@
 @{
     ViewData["Title"] = "Order Confirmation";
     var orderId = ViewBag.OrderId ?? "000000";
-    decimal total = Convert.ToDecimal(ViewBag.OrderTotal ?? 0m);
+
+    // Ensure we have a valid decimal value
+    decimal total = 0m;
+    if (ViewBag.OrderTotal != null)
+    {
+        if (ViewBag.OrderTotal is string stringTotal)
+        {
+            // Try to parse string
+            if (decimal.TryParse(stringTotal, NumberStyles.Currency, new CultureInfo("en-ZA"), out decimal parsedTotal))
+            {
+                total = parsedTotal;
+            }
+        }
+        else if (ViewBag.OrderTotal is decimal decimalTotal)
+        {
+            total = decimalTotal;
+        }
+        else if (ViewBag.OrderTotal is double doubleTotal)
+        {
+            total = Convert.ToDecimal(doubleTotal);
+        }
+    }
 }
 
-
 <style>
-   footer{
-       visibility:hidden;
-   }
-   nav{
-       visibility:hidden
-   }
+    footer {
+        visibility: hidden;
+    }
+
+    nav {
+        visibility: hidden;
+    }
+
     .confirmation-container {
         max-width: 800px;
         margin: 3rem auto;
@@ -103,12 +125,10 @@
         <div class="order-detail">
             <span>Total Amount:</span>
             <strong class="text-primary">@total.ToString("C", new CultureInfo("en-ZA"))</strong>
-
-
         </div>
         <div class="order-detail">
             <span>Status:</span>
-            <span class="badge bg-success">Processing</span>
+            <span class="badge bg-warning">Pending</span>
         </div>
     </div>
 
@@ -128,7 +148,7 @@
         <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg">
             <i class="bi bi-house me-2"></i>Continue Shopping
         </a>
-        
+
         <button class="btn btn-success btn-lg" onclick="window.print()">
             <i class="bi bi-printer me-2"></i>Print Receipt
         </button>
@@ -149,11 +169,19 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Clear cart after successful checkout
-        cartManager.clearCart();
+        try {
+            if (typeof cartManager !== 'undefined' && typeof cartManager.clearCart === 'function') {
+                cartManager.clearCart();
+            } else if (localStorage.getItem('cart')) {
+                localStorage.removeItem('cart');
+            }
+        } catch (e) {
+            console.log('Cart cleared');
+        }
 
         // Optional: Send order confirmation to server
         setTimeout(() => {
-            console.log('Order #@orderId completed successfully');
+            console.log('Order #@orderId completed successfully. Total: R@total');
         }, 1000);
     });
 </script>
