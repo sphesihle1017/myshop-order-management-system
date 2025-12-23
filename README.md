@@ -1,17 +1,17 @@
-# 🛍️ MyShop E-commerce Platform (.NET 8)
+#  MyShop E-commerce Platform (.NET 8)
 
 A complete, feature-rich ASP.NET Core 8 e-commerce platform with full user management, product catalog, shopping cart, order processing, and analytics built using 3 tier achitecture.
 
-## ✨ Features
+##  Features
 
-### 🛒 **Customer Experience**
+###  **Customer Experience**
 -   **Responsive Product Catalog** - Browse products by category
 -   **Shopping Cart** - Add, remove, and update quantities
 -   **Secure Checkout** - Complete order placement process
 -   **Order Tracking** - Real-time order status updates
 
 
-### 📦 **Admin Management**
+###  **Admin Management**
 -   **Complete Order Management** - Process, ship, and deliver orders
 -   **Inventory Control** - Stock level management and alerts
 -   **User Administration** - Manage customer accounts and roles
